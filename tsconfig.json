@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "target": "es5",
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "declaration": false,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ],
+    "lib": ["es6", "dom"],
+    "types":["node"],
+    "paths": {
+      "app/*": ["src/scripts/app/*"],
+      "engine": ["src/scripts/engine"],
+      "pixi-app-wrapper": ["./src/scripts/third_party/pixi-app-wrapper"],
+      "pixi-assets-loader": ["src/scripts/vendor/dacaher/pixi-assets-loader"],
+      "gamepad": ["src/scripts/third_party/standard_gamepad"],
+      "howler": ["node_modules/howler/"],
+      "typescript-collections/*": ["src/scripts/vendor/basarat/typescript-collections/*"],
+      "pixi": ["node_modules/pixi.js"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/vendor",
+    "**/*.spec.ts"
+  ]
+}
