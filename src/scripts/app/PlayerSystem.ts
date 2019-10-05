@@ -51,7 +51,6 @@ export class PlayerSystem extends System {
         //transform.pos = new Point(160, 0);
         transform.pos = this.engine.get(LevelSystem).playerStart;
         transform.rotation = 0;
-        //physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));
         let shape:XY[] = [
             { x: -16, y: 16},
             { x: 16, y: 16 },
