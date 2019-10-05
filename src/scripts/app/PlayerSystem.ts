@@ -10,6 +10,7 @@ import { b2Vec2 } from "@flyover/box2d";
 import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 import { Config } from "./config";
 import {StandardGamepad, StandardGamepadMapping, StandardGamepadButton} from "../third_party/standard-gamepad";
+import { StarTwit } from "./ogre-star-twit";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
@@ -17,7 +18,8 @@ export class PlayerSystem extends System {
     keyboard: KeyboardSystem;
     mapping: StandardGamepadMapping = new StandardGamepadMapping();
     gamepad: StandardGamepad = new StandardGamepad(navigator, window, this.mapping);
-    
+    shotTimer: number = 0;
+
     startGame() {
         this.keyboard = this.engine.get(KeyboardSystem);
         let physics = this.engine.get(PhysicsSystem);
@@ -27,7 +29,7 @@ export class PlayerSystem extends System {
         transform.pos = new Point(160, 0);
         transform.rotation = 0;
         physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));
-        sprite.Load('lander');
+        sprite.Load('ship');
         sprite.sprite.pivot = new Point(16, 16);
         //sprite.sprite.pivot = transform.pivot;
         this.engine.app.stage.addChild(this.player.get(SpriteComponent).sprite);
@@ -65,6 +67,13 @@ export class PlayerSystem extends System {
           pc.body.ApplyTorque(rotate * 1000);
         }
 
-        this.engine.app.stage.position = new Point(-t.pos.x + 160, -t.pos.y + 120);
+        this.shotTimer -= deltaTime;
+        if (this.keyboard.isKeyDown(32)) {
+            if (this.shotTimer <= 0) {
+                console.log('fire');
+                this.shotTimer = 1.0;
+            }
+        }
+        this.engine.app.stage.position = new Point(-t.pos.x + StarTwit.CANVAS_SIZE.x / 2, -t.pos.y + StarTwit.CANVAS_SIZE.y / 2);
     }
 }

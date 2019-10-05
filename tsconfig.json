@@ -14,7 +14,7 @@
       "node_modules/@types",
       "src/types"
     ],
-    "lib": ["es6", "dom"],
+    "lib": ["es5", "dom"],
     "types":["node"],
     "paths": {
       "app/*": ["src/scripts/app/*"],

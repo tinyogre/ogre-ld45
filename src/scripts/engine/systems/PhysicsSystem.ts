@@ -1,4 +1,4 @@
-import {b2World, b2Vec2, b2Body, b2BodyDef, b2PolygonShape, b2BodyType, XY, b2FixtureDef} from "@flyover/box2d";
+import {b2World, b2Vec2, b2Body, b2BodyDef, b2PolygonShape, b2BodyType, XY, b2FixtureDef, b2ContactListener, b2Contact, b2ParticleSystem, b2ParticleBodyContact, b2ParticleContact, b2Manifold, b2ContactImpulse} from "@flyover/box2d";
 import {System} from "../System";
 import { Transform } from "../components/Transform"
 import { EntityManager } from "../EntityManager";
@@ -8,16 +8,75 @@ import { Point, Rectangle } from "pixi.js";
 import { Entity } from "../entity";
 import { Config } from "../../app/config"
 
+// class ContactListener extends b2ContactListener {
+//     physics: PhysicsSystem;
+
+//     constructor(physics: PhysicsSystem) {
+//         super();
+//         this.physics = physics;
+//     }
+
+//     public BeginContact(contact: b2Contact) {
+//         console.log("Contact!");
+//     }
+
+//     public EndContact(contact: b2Contact) {
+//         console.log("End Contact!");
+//     }
+// }
+
+export class xxxContactListener {
+    /// Called when two fixtures begin to touch.
+    public BeginContact(contact: b2Contact): void { 
+        console.log("BeginContext");
+    }
+
+    /// Called when two fixtures cease to touch.
+    public EndContact(contact: b2Contact): void { }
+
+    // #if B2_ENABLE_PARTICLE
+    public BeginContactFixtureParticle(system: b2ParticleSystem, contact: b2ParticleBodyContact): void { }
+    public EndContactFixtureParticle(system: b2ParticleSystem, contact: b2ParticleBodyContact): void { }
+    public BeginContactParticleParticle(system: b2ParticleSystem, contact: b2ParticleContact): void { }
+    public EndContactParticleParticle(system: b2ParticleSystem, contact: b2ParticleContact): void { }
+    // #endif
+
+    /// This is called after a contact is updated. This allows you to inspect a
+    /// contact before it goes to the solver. If you are careful, you can modify the
+    /// contact manifold (e.g. disable contact).
+    /// A copy of the old manifold is provided so that you can detect changes.
+    /// Note: this is called only for awake bodies.
+    /// Note: this is called even when the number of contact points is zero.
+    /// Note: this is not called for sensors.
+    /// Note: if you set the number of contact points to zero, you will not
+    /// get an EndContact callback. However, you may get a BeginContact callback
+    /// the next step.
+    public PreSolve(contact: b2Contact, oldManifold: b2Manifold): void { }
+
+    /// This lets you inspect a contact after the solver is finished. This is useful
+    /// for inspecting impulses.
+    /// Note: the contact manifold does not include time of impact impulses, which can be
+    /// arbitrarily large if the sub-step is small. Hence the impulse is provided explicitly
+    /// in a separate data structure.
+    /// Note: this is only called for contacts that are touching, solid, and awake.
+    public PostSolve(contact: b2Contact, impulse: b2ContactImpulse): void { }
+
+    public static readonly b2_defaultListener: b2ContactListener = new b2ContactListener();
+}
+
 export class PhysicsSystem extends System {
     static sname = "physics";
     world: b2World;
     ground: b2Body;
     debug: boolean;
+    contactListener: b2ContactListener;
 
     constructor() {
         super();
         let gravity: b2Vec2 = new b2Vec2(0, Config.gravity);
         this.world = new b2World(gravity);
+        this.contactListener = new xxxContactListener();
+        this.world.SetContactListener(this.contactListener);
     }
 
     update(deltaTime: number) {

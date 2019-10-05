@@ -1,24 +1,33 @@
-/* * {
+* {
     padding: 0;
     margin: 0;
-} */
+}
 
-/* html {
+/*
+html {
     width: 100%;
     height: 100%;
-} */
-
-/* body {
+}
+*/
+/*
+body {
     width: inherit;
     height: inherit;
-} */
+}
+*/
 
-/* canvas {
+
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
     display: block;
     position: absolute;
-    width: 100%;
-    height: 100%;
-} */
+    width: 98%;
+    /*height: 960px;*/
+}
+
 
 .hidden {
     visibility: hidden;

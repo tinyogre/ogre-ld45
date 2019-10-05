@@ -16,7 +16,7 @@ import { DebugRenderSystem } from "../engine/systems/DebugRenderSystem";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 
-export class OgreLanderTestApp {
+export class StarTwit {
     app: PixiAppWrapper;
     loader: PixiAssetsLoader;
     splash_screen: Sprite;
@@ -24,21 +24,24 @@ export class OgreLanderTestApp {
     assets: Asset[] = [
         {id: "splash_screen", url: "assets/gfx/splash_screen.png", priority: AssetPriority.HIGHEST, type: "texture" },
         {id: "press_start_2p", url: "assets/fonts/PressStart2p.ttf", priority: AssetPriority.HIGHEST, type: "font" },
-        {id: "lander", url: "assets/gfx/lander.png", priority: AssetPriority.HIGH, type: "texture"},
+        {id: "ship", url: "assets/gfx/ship.png", priority: AssetPriority.HIGH, type: "texture"},
     ];
     sound: Howl;
     engine: Engine;
-        
+    statusText: PIXI.Text;
+    static CANVAS_SIZE: Point = new Point(640, 480);
+
     constructor() {
         PIXI.settings.SCALE_MODE = SCALE_MODES.NEAREST;
         PIXI.settings.TARGET_FPMS = 60 / 1000;
+        
         let type = "WebGL";
         if (!PIXI.utils.isWebGLSupported()) {
             type = "canvas";
         }
         PIXI.utils.sayHello(type);
 
-        this.app = new PixiAppWrapper({width: 320, height: 240, resolution: 4});
+        this.app = new PixiAppWrapper({width: StarTwit.CANVAS_SIZE.x, height: StarTwit.CANVAS_SIZE.y, resolution: 2});
         this.app.renderer.backgroundColor = 0x000040;
         this.loader = new PixiAssetsLoader();
         this.loader.on(PixiAssetsLoader.PRIORITY_GROUP_LOADED, this.onAssetsLoaded.bind(this));
@@ -69,9 +72,10 @@ export class OgreLanderTestApp {
 
     private startMenu() {
         this.splash_screen = PIXI.Sprite.from('splash_screen');
+        this.splash_screen.scale = new Point(2,2);
         this.app.stage.addChild(this.splash_screen);
-        let text = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 8, fill: 0xffffff, align: 'center'});
-        this.splash_screen.addChild(text);
+        this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 8, fill: 0xffffff, align: 'center'});
+        this.splash_screen.addChild(this.statusText);
     }
 
     private onMenuClick() {
@@ -105,6 +109,7 @@ export class OgreLanderTestApp {
             this.startMenu();
         }
         if (args.priority === AssetPriority.HIGH) {
+            this.statusText.text = "Click to Start";
             let fn = this.onMenuClick.bind(this);
             this.app.renderer.plugins.interaction.on('pointerup', fn);
         }

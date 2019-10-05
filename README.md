@@ -1,16 +1,14 @@
-# ogre-pixi-starter
+# ogre-ld45
 
-A Pixi.js with typescript starter kit
+Entry for Ludum Dare 45
 
-Cribbed heavily from https://github.com/dacaher/pixijs-ts-boilerplate but has 
-fewer dependencies, and using latest pixi.js
+Starter project: https://github.com/tinyogre/ogre-pixi-starter
 
 ## Usage
 
-Make a copy of this one way or another.
-
+```
 npm install
 npm run build && npm run serve
-
+```
 Hack
 
