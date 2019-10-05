@@ -1,4 +1,4 @@
-import {b2World, b2Vec2, b2Body, b2BodyDef, b2PolygonShape, b2BodyType, XY, b2FixtureDef, b2ContactListener, b2Contact, b2ParticleSystem, b2ParticleBodyContact, b2ParticleContact, b2Manifold, b2ContactImpulse} from "@flyover/box2d";
+import {b2World, b2Vec2, b2Body, b2BodyDef, b2PolygonShape, b2BodyType, XY, b2FixtureDef, b2ContactListener, b2Contact, b2ParticleSystem, b2ParticleBodyContact, b2ParticleContact, b2Manifold, b2ContactImpulse, b2Shape, b2CircleShape} from "@flyover/box2d";
 import {System} from "../System";
 import { Transform } from "../components/Transform"
 import { EntityManager } from "../EntityManager";
@@ -99,8 +99,14 @@ export class PhysicsSystem extends System {
             let b2rotation = pc.body.GetAngle();
             let p = this.unscalePoint(new Point(b2pos.x, b2pos.y));
             t.pos = new Point(p.x, p.y);
-            t.rotation = b2rotation;
+            if (!pc.fixedVisualRotation) {
+                t.rotation = b2rotation;
+            }
         }
+    }
+
+    private scaleDistance(d: number): number {
+        return d * Config.physicsScale;
     }
 
     private scaleRect(r: Rectangle) : Rectangle {
@@ -156,25 +162,22 @@ export class PhysicsSystem extends System {
         return new Rectangle(min.x, min.y, max.x - min.x, max.y - min.y);
     }
 
-    private addShapeInternal(unscaled: XY[], type: b2BodyType, pc: PhysicsComponent, t: Transform) {
+    private addPolygonInternal(unscaled: XY[], type: b2BodyType, pc: PhysicsComponent, t: Transform) {
         let verts = this.scaleShape(unscaled);
+        let poly = new b2PolygonShape();
+        poly.Set(verts);
+        pc.bounds = this.unscaleRect(this.getBounds(verts)); //this.unscaleRect(new PIXI.Rectangle(0, 0, r.width, r.height));
+        pc.shape = this.getPoints(unscaled);
+        this.addShapeInternal(poly, type, pc, t);
+    }
+
+    private addShapeInternal(shape: b2Shape, type: b2BodyType, pc: PhysicsComponent, t: Transform) {
         let def = new b2BodyDef();
         def.type = type;
         def.position.Set(0, 0);
         pc.body = this.world.CreateBody(def);
-        let box = new b2PolygonShape();
-        // let verts:XY[] = [
-        //     {x: 0, y: 0},
-        //     {x: r.width, y: 0},
-        //     {x: r.width, y: r.height},
-        //     {x: 0, y: r.height}
-        // ];
-        box.Set(verts);
-        //box.SetAsBox(r.width/2, r.height/2, new b2Vec2(r.width / 2, r.height / 2));
-        pc.bounds = this.unscaleRect(this.getBounds(verts)); //this.unscaleRect(new PIXI.Rectangle(0, 0, r.width, r.height));
-        pc.shape = this.getPoints(unscaled);
         let fd = new b2FixtureDef();
-        fd.shape = box;
+        fd.shape = shape;
         fd.density = 1.0;
         fd.friction = 5;
         let fixture = pc.body.CreateFixture(fd);
@@ -182,6 +185,7 @@ export class PhysicsSystem extends System {
         pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);
         pc.body.m_userData = pc;
     }
+
     getPoints(unscaled: XY[]): Point[] {
         let p: Point[] = [];
         for (let xy of unscaled) {
@@ -201,7 +205,7 @@ export class PhysicsSystem extends System {
             v.x += r.left;
             v.y += r.top;
         }
-        this.addShapeInternal(verts, type, pc, t);
+        this.addPolygonInternal(verts, type, pc, t);
     }
 
     public addShape(e: Entity, shape: XY[], bodyType?: b2BodyType) {
@@ -210,7 +214,7 @@ export class PhysicsSystem extends System {
         }
         let pc = e.getOrAdd(PhysicsComponent);
         let t = e.get(Transform);
-        this.addShapeInternal(shape, bodyType, pc, t);
+        this.addPolygonInternal(shape, bodyType, pc, t);
     }
 
     createStatic(r: PIXI.Rectangle, bodyType?: b2BodyType): Entity {
@@ -233,6 +237,26 @@ export class PhysicsSystem extends System {
         let pc = e.getOrAdd(PhysicsComponent);
         let t = e.get(Transform);
         this.addBoxInternal(rect, bodyType, pc, t);
+    }
+    
+    addCircle(e: Entity, radius: number, bodyType?: b2BodyType): PhysicsComponent {
+        if (!bodyType) {
+            bodyType = b2BodyType.b2_dynamicBody;
+        }
+        let physicsRadius = this.scaleDistance(radius);
+        let pc = e.getOrAdd(PhysicsComponent);
+        let t = e.get(Transform);
+        let circle = new b2CircleShape(physicsRadius);
+        pc.bounds = new Rectangle(-physicsRadius, physicsRadius, 2*physicsRadius, 2*physicsRadius);
+        let shapeVerts:XY[] = [
+            {x: 0, y: 0},
+            {x: radius, y: 0},
+            {x: radius, y: radius},
+            {x: 0, y: radius},
+        ];
+        pc.shape = this.getPoints(shapeVerts);
+        this.addShapeInternal(circle, bodyType, pc, t);
+        return pc;
     }
 
     toggleDebug() {

@@ -24,8 +24,9 @@ export class LevelSystem extends System {
     currentLevelIndex: number = -1;
     loadNextLevel: number = 0;
     levels: Level[] = [
-        Levels.level1,
-        Levels.level2,
+//        Levels.level1,
+//        Levels.level2,
+        Levels.level3,
     ];
     particles: ParticleSystem;
     pickups: PickupSystem;
@@ -73,8 +74,11 @@ export class LevelSystem extends System {
                 } else if (c === "T") {
                     e = this.pickups.newPickup("engine", worldX, worldY, new Rectangle(8, 25, 16, 7));
                 } else if (c === "O") {
-                    e = this.pickups.newPickup("wormhole", worldX, worldY, new Rectangle(0, 0, 64, 64), b2BodyType.b2_kinematicBody);
+                    e = this.pickups.newCirclePickup("wormhole", worldX, worldY, 32, b2BodyType.b2_kinematicBody);
                     this.particles.addParticleEmitter(e, ParticleDef.WORMHOLE);
+                    e.get(PhysicsComponent).body.GetFixtureList()!.m_isSensor = true;
+                } else if (c === "G") {
+                    e = this.pickups.newPickup("turret", worldX, worldY, new Rectangle(10, 4, 12, 18))
                 }
 
                 if (level.messages[c]) {

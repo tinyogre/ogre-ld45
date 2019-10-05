@@ -7,4 +7,9 @@ export class Config {
 
     static playerThrust = 750;
     static tileSize = 32;
+    static turretTurnRate = 1;
+    static shotSpeed = 75;
+    static shotDelay = 0.5;
+    static recoil = 3000;
+    static shotDuration = 30;
 }

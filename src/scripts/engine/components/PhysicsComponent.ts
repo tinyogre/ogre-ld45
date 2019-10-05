@@ -7,6 +7,7 @@ export class PhysicsComponent extends Component {
     bounds: PIXI.Rectangle;
     shape: PIXI.Point[];
     contactListener?: (self: PhysicsComponent, other: PhysicsComponent) => void;
+    fixedVisualRotation: boolean = false;
 
     onDelete() {
         if (this.body) {

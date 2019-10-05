@@ -26,18 +26,17 @@ export class PickupSystem extends System {
         this.messages = this.engine.get(MessageSystem);
     }
 
-    newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType): Entity {
+    private internalNewPickup(what: string, x: number, y: number): Entity {
         let e: Entity = this.engine.entityManager.createEntity(what);
         let t = e.add(Transform);
         let s = e.add(SpriteComponent);
         s.Load(what);
-        s.sprite.pivot = new Point(r.x + r.width / 2, r.y + r.height / 2);
 
         let pickup = e.add(PickupComponent);
         pickup.what = what;
         t.pos.set(x, y);
-        this.physics.addBox(e, new Rectangle(-r.width / 2, -r.height / 2, r.width, r.height), bodyType);
-        e.get(PhysicsComponent).contactListener = this.onContact.bind(this);
+        let physics = e.getOrAdd(PhysicsComponent);
+        physics.contactListener = this.onContact.bind(this);
         let attractDef = {
             sprite: "thrustparticle",
             permanent: true,
@@ -49,9 +48,26 @@ export class PickupSystem extends System {
             velocity: 50,
             gravityCoefficient: 0,
         };
-        if (what == "star" || what == "engine") {
+        if (what == "star" || what == "engine" || what == "turret") {
             this.particles.addParticleEmitter(e, attractDef);
         }
+        return e;
+
+    }
+
+    newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType): Entity {
+        let e = this.internalNewPickup(what, x, y);
+        let s = e.get(SpriteComponent);
+        s.sprite.pivot = new Point(r.x + r.width / 2, r.y + r.height / 2);
+        this.physics.addBox(e, new Rectangle(-r.width / 2, -r.height / 2, r.width, r.height), bodyType);
+        return e;
+    }
+
+    newCirclePickup(what: string, x: number, y: number, radius: number, bodyType?: b2BodyType): Entity {
+        let e = this.internalNewPickup(what, x, y);
+        let s = e.get(SpriteComponent);
+        s.sprite.pivot = new Point(radius, radius);
+        this.physics.addCircle(e, radius, bodyType);
         return e;
     }
 
@@ -82,6 +98,8 @@ export class PickupSystem extends System {
             this.engine.events.emit(GameEvent.ADD_STEERING);
         } else if (pickup.what == "engine") {
             this.engine.events.emit(GameEvent.ADD_THRUST);
+        } else if (pickup.what == "turret") {
+            this.engine.events.emit(GameEvent.ADD_TURRET, newPlayerSprite);
         }
 
         this.engine.entityManager.deleteEntity(self.entity);

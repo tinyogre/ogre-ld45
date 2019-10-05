@@ -6,5 +6,7 @@ export class PlayerComponent extends Component {
     canSteer: boolean = false;
     canThrust: boolean = false;
     canDebug: boolean = true;
+    canTurret: boolean = false;
+    turretSprite?: PIXI.Sprite;
     thrustEmitter: ParticleEmitter;
 }

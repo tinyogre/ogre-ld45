@@ -20,6 +20,7 @@ import { StarFieldSystem } from "./StarFieldSystem";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { LevelSystem } from "./LevelSystem";
 import { MessageSystem } from "./MessageSystem";
+import { TtlSystem } from "./TtlSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -45,6 +46,8 @@ export class StarTwit {
         "wormhole",
         "wormholeswirl",
         "wormholespark",
+        "turret",
+        "bouncyball",
     ]
     
     sound: Howl;
@@ -83,6 +86,7 @@ export class StarTwit {
         this.engine.add(StarFieldSystem);
         this.engine.add(ParticleSystem);
         this.engine.add(MessageSystem);
+        this.engine.add(TtlSystem);
         
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.engine.gameStage;
