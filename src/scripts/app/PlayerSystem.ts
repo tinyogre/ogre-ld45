@@ -31,6 +31,10 @@ export class PlayerSystem extends System {
         this.keyboard = this.engine.get(KeyboardSystem);
         this.engine.events.addListener(GameEvent.START_LEVEL, this.startLevel.bind(this));
         this.engine.events.addListener(GameEvent.END_LEVEL, this.endLevel.bind(this));
+        this.keyboard.addKeyDown(this.keyDown.bind(this));
+
+        this.gamepad.onConnected(() => { console.log("Gamepad connected!") });
+        this.gamepad.enable();
     }
 
     endLevel() {
@@ -78,11 +82,6 @@ export class PlayerSystem extends System {
         physics.addShape(this.player, shape);
         sprite.Load('ship');
         sprite.sprite.pivot = new Point(16, 16);
-
-        this.gamepad.onConnected(() => { console.log("Gamepad connected!")});
-        this.gamepad.enable();
-
-        this.keyboard.addKeyDown(this.keyDown.bind(this));
     }
 
     keyDown(key: number) {

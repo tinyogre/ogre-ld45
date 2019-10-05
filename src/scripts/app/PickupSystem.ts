@@ -45,7 +45,9 @@ export class PickupSystem extends System {
             velocity: 50,
             gravityCoefficient: 0,
         };
-        this.particles.addParticleEmitter(e, attractDef);
+        if (what == "star" || what == "engine") {
+            this.particles.addParticleEmitter(e, attractDef);
+        }
         return e;
     }
 

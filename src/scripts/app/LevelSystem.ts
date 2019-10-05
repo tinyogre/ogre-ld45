@@ -9,6 +9,8 @@ import { Levels, Level } from "./Levels";
 import { Entity } from "../engine/entity";
 import { LevelObjectComponent } from "./LevelObjectComponent";
 import { GameEvent } from "./GameEvent";
+import { ParticleSystem } from "../engine/systems/ParticleSystem";
+import { ParticleDef } from "../engine/components/ParticleComponent";
 
 export class LevelSystem extends System {
     static sname = "levelsystem";
@@ -23,8 +25,9 @@ export class LevelSystem extends System {
         Levels.level1,
         Levels.level2,
     ];
-
+    particles: ParticleSystem;
     pickups: PickupSystem;
+
     update(deltaTime: number): void {
         if (this.loadNextLevel != this.currentLevelIndex) {
             this.destroyLevel();
@@ -47,6 +50,7 @@ export class LevelSystem extends System {
         this.pickups = this.engine.get(PickupSystem);
         this.engine.gameStage.addChild(this.levelContainer);
         this.wallTexture = PIXI.BaseTexture.from("3x3bluewalls");
+        this.particles = this.engine.get(ParticleSystem);
     }
 
     loadLevel(level: Level) {
@@ -68,6 +72,7 @@ export class LevelSystem extends System {
                     e = this.pickups.newPickup("engine", worldX, worldY, new Rectangle(8, 25, 16, 7));
                 } else if (c === "O") {
                     e = this.pickups.newPickup("wormhole", worldX, worldY, new Rectangle(0, 0, 64, 64), b2BodyType.b2_kinematicBody);
+                    this.particles.addParticleEmitter(e, ParticleDef.WORMHOLE);
                 }
                 if (e) {
                     e.getOrAdd(LevelObjectComponent);

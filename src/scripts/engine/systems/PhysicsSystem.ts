@@ -78,7 +78,7 @@ export class PhysicsSystem extends System {
     static sname = "physics";
     world: b2World;
     ground: b2Body;
-    debug: boolean;
+    debug: boolean = false;
     contactListener: b2ContactListener;
 
     constructor() {
