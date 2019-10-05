@@ -13,6 +13,8 @@ import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { ParticleDef } from "../engine/components/ParticleComponent";
 import { PickupComponent } from "../engine/components/PickupComponent";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
+import { Engine } from "../engine/Engine";
+import { MessageSystem } from "./MessageSystem";
 
 export class LevelSystem extends System {
     static sname = "levelsystem";
@@ -30,7 +32,17 @@ export class LevelSystem extends System {
     ];
     particles: ParticleSystem;
     pickups: PickupSystem;
-
+    
+    static first_shot = true;
+    static checkFirstShot(engine: Engine) {
+        if (LevelSystem.first_shot) {
+            Engine.instance.get(MessageSystem).addMessage(
+                new Point(320, 220), Engine.instance.uiStage, 
+                "It fires BOUNCY BALLS?  Okay...", 10, 0xff8080);
+            LevelSystem.first_shot = false;
+        }
+    };
+    
     update(deltaTime: number): void {
         if (this.loadNextLevel != this.currentLevelIndex) {
             this.destroyLevel();
@@ -96,6 +108,12 @@ export class LevelSystem extends System {
                     e.getOrAdd(LevelObjectComponent);
                 }
             }
+        }
+
+        for (let ev of level.events) {
+            this.engine.events.addListener(ev[0], () => {
+                ev[1](this.engine);
+            });
         }
 
         this.engine.events.emit(GameEvent.START_LEVEL, level)

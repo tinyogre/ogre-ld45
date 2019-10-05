@@ -1,7 +1,14 @@
+import {GameEvent} from "./GameEvent";
+import { Engine } from "../engine/Engine";
+import { LevelSystem } from "./LevelSystem";
+
 export class Level {
     map: string[];
     messages: { [code: string]: string };
+    events: [ string, (engine: Engine) => void ][];
 }
+
+
 export class Levels {
     static level1: Level = {
         map: [
@@ -32,6 +39,7 @@ export class Levels {
             "2": "Look!  Below!  It's my engine!",
             "T": "I got my main engine back!\nMaybe now I can reach that wormhole?",
         },
+        events: []
     };
 
     static level2: Level = {
@@ -56,7 +64,8 @@ export class Levels {
         messages: {
             "1": "Again? Really?",
             "S": "I got my cockpit back this time, now I can turn..."
-        }
+        },
+        events: []
     };
 
     static level3: Level = {
@@ -80,6 +89,9 @@ export class Levels {
         ],              
         messages: {     
             "G": "A Turret!  Now we're talking!",
-        }
+        },
+        events: [
+            [GameEvent.FIRED_SHOT, (engine) => LevelSystem.checkFirstShot(engine)],
+        ]
     };
 }

@@ -209,6 +209,6 @@ export class PlayerSystem extends System {
         let playerPhysics = this.player!.get(PhysicsComponent);
         playerPhysics.body.ApplyForce(new b2Vec2(-directionVector.x * Config.recoil, -directionVector.y * Config.recoil), playerPhysics.body.GetWorldCenter());
         this.engine.get(TtlSystem).setTtl(shot, Config.shotDuration);
-
+        this.engine.events.emit(GameEvent.FIRED_SHOT);
     }
 }

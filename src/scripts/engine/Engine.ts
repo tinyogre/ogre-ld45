@@ -18,6 +18,7 @@ export class Engine {
     paused: boolean = false;
     gameStage: Container;
     uiStage: Container;
+    static instance: Engine;
 
     constructor(app: PixiAppWrapper) {
         this.app = app;
@@ -26,6 +27,7 @@ export class Engine {
         this.app.stage.addChild(this.gameStage);
         this.uiStage = new Container();
         this.app.stage.addChild(this.uiStage);
+        Engine.instance = this;
     }
     
     // I don't know why this isn't just a system too
