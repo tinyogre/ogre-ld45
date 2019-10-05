@@ -35,17 +35,25 @@ export class PickupSystem extends System {
     }
 
     onContact(self: PhysicsComponent, other: PhysicsComponent) {
-        if (other.entity.get(PlayerComponent)) {
-            let pickup = self.entity.get(PickupComponent);
-            console.log("Pickup " + pickup.what + " touched player");
-            let mySprite = self.entity.get(SpriteComponent);
-            
-            let newPlayerSprite = PIXI.Sprite.from(mySprite.asset);
-
-            other.entity.get(SpriteComponent).sprite.addChild(newPlayerSprite);
-            
-            this.engine.entityManager.deleteEntity(self.entity);
+        let player = other.entity.get(PlayerComponent);
+        if (!player) {
+            return;
         }
+        let pickup = self.entity.get(PickupComponent);
+        console.log("Pickup " + pickup.what + " touched player");
+        let mySprite = self.entity.get(SpriteComponent);
+        
+        let newPlayerSprite = PIXI.Sprite.from(mySprite.asset);
+
+        other.entity.get(SpriteComponent).sprite.addChild(newPlayerSprite);
+        
+        if (pickup.what === "star") {
+            player.canSteer = true;
+        } else if (pickup.what == "engine") {
+            player.canThrust = true;
+        }
+
+        this.engine.entityManager.deleteEntity(self.entity);
     }
 
     update(deltaTime: number): void {

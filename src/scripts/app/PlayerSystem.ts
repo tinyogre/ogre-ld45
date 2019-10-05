@@ -54,6 +54,8 @@ export class PlayerSystem extends System {
         let rotate: number = 0;
         let pc = this.player.get(PhysicsComponent);
         let t = this.player.get(Transform);
+        let player = this.player.get(PlayerComponent);
+
         let buttons = this.gamepad.getPressedButtons();
         let joystick: any = this.gamepad.getJoystickPositions();
         let leftStick: Point = new Point(0,0);
@@ -61,14 +63,19 @@ export class PlayerSystem extends System {
             leftStick = new Point(joystick.left.horizontal, joystick.left.vertical);
         }
 
-        if (this.keyboard.isKeyDown(87, 38) || buttons.includes(StandardGamepadButton.A)) {
-            pc.body.ApplyForce(PlayerSystem.rotate(new b2Vec2(0, -1000), t.rotation), pc.body.GetWorldCenter());
+        if (player.canThrust) {
+            if (this.keyboard.isKeyDown(87, 38) || buttons.includes(StandardGamepadButton.A)) {
+                pc.body.ApplyForce(PlayerSystem.rotate(new b2Vec2(0, -1000), t.rotation), pc.body.GetWorldCenter());
+            }
         }
-        if (this.keyboard.isKeyDown(65, 37) || leftStick.x < -0.5) {
-            rotate -= 1;
-        }
-        if (this.keyboard.isKeyDown(68, 39) || leftStick.x > 0.5) {
-            rotate += 1;
+
+        if (player.canSteer) {
+            if (this.keyboard.isKeyDown(65, 37) || leftStick.x < -0.5) {
+                rotate -= 1;
+            }
+            if (this.keyboard.isKeyDown(68, 39) || leftStick.x > 0.5) {
+                rotate += 1;
+            }
         }
         if (rotate !== 0) {
           pc.body.ApplyTorque(rotate * 1000);
