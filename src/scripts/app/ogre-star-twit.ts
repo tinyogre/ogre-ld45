@@ -18,6 +18,7 @@ import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 import { PickupSystem } from "./PickupSystem";
 import { StarFieldSystem } from "./StarFieldSystem";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
+import { LevelSystem } from "./LevelSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -39,6 +40,7 @@ export class StarTwit {
         "engine",
         "ground001",
         "thrustparticle",
+        "3x3bluewalls",
     ]
     
     sound: Howl;
@@ -71,8 +73,9 @@ export class StarTwit {
         this.engine.add(KeyboardSystem);
         this.engine.add(PhysicsSystem);
         this.engine.add(SpriteSystem);
-        this.engine.add(PlayerSystem);
         this.engine.add(PickupSystem);
+        this.engine.add(LevelSystem);
+        this.engine.add(PlayerSystem);
         this.engine.add(StarFieldSystem);
         this.engine.add(ParticleSystem);
 
@@ -82,9 +85,9 @@ export class StarTwit {
 
     private startGame() {
         let physics:PhysicsSystem = this.engine.get(PhysicsSystem);
-        this.createGround(physics, 0, 470);
-        this.createGround(physics, 320, 470);
-        this.createGround(physics, -320, 470);
+        // this.createGround(physics, 0, 470);
+        // this.createGround(physics, 320, 470);
+        // this.createGround(physics, -320, 470);
 
         this.engine.startGame();
         this.app.ticker.add((dt) => this.update(dt));

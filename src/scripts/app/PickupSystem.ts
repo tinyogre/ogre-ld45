@@ -18,8 +18,8 @@ export class PickupSystem extends System {
     startGame() {
         this.physics = this.engine.get(PhysicsSystem);
         this.particles = this.engine.get(ParticleSystem);
-        this.newPickup("star", 160, 440, new Rectangle(9, 10, 14, 15));
-        this.newPickup("engine", 300, 400, new Rectangle(8, 25, 16, 7));
+        // this.newPickup("star", 160, 440, new Rectangle(9, 10, 14, 15));
+        // this.newPickup("engine", 300, 400, new Rectangle(8, 25, 16, 7));
     }
 
     newPickup(what: string, x: number, y: number, r: Rectangle): Entity {

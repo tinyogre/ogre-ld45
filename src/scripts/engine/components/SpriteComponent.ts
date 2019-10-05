@@ -1,5 +1,5 @@
 import {Component} from "../component"
-import { Sprite, Point } from "pixi.js"
+import { Sprite, Point, BaseTexture, Rectangle } from "pixi.js"
 import { DebugRenderSystem } from "../systems/DebugRenderSystem";
 
 export class SpriteComponent extends Component {
@@ -12,6 +12,12 @@ export class SpriteComponent extends Component {
         this.entity.engine.app.stage.addChild(this.sprite);
     }
 
+    LoadFrame(inTexture: BaseTexture, frame: Rectangle) {
+        let texture = new PIXI.Texture(inTexture, frame);
+        this.sprite = PIXI.Sprite.from(texture);
+        this.entity.engine.app.stage.addChild(this.sprite);
+    }
+    
     onDelete() {
         if (this.sprite) {
             //this.sprite.parent.removeChild(this.sprite);

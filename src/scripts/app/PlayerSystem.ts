@@ -14,6 +14,7 @@ import { XY, b2Vec2 } from "@flyover/box2d";
 import { PlayerComponent } from "./PlayerComponent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { ParticleEmitterDef } from "../engine/components/ParticleComponent";
+import { LevelSystem } from "./LevelSystem";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
@@ -46,7 +47,8 @@ export class PlayerSystem extends System {
         playerComponent.thrustEmitter = particles.addParticleEmitter(this.player, thrustDef);
         playerComponent.thrustEmitter.enabled = true;
 
-        transform.pos = new Point(160, 0);
+        //transform.pos = new Point(160, 0);
+        transform.pos = this.engine.get(LevelSystem).playerStart;
         transform.rotation = 0;
         //physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));
         let shape:XY[] = [

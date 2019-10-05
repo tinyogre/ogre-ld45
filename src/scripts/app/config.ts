@@ -6,4 +6,5 @@ export class Config {
     static gravity = 1.62;
 
     static playerThrust = 750;
+    static tileSize = 32;
 }
