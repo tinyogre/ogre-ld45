@@ -19,6 +19,7 @@ import { LevelSystem } from "./LevelSystem";
 export class PlayerSystem extends System {
     static sname: string = "player";
     player: Entity;
+    playerComponent: PlayerComponent;
     keyboard: KeyboardSystem;
     mapping: StandardGamepadMapping = new StandardGamepadMapping();
     gamepad: StandardGamepad = new StandardGamepad(navigator, window, this.mapping);
@@ -30,7 +31,7 @@ export class PlayerSystem extends System {
         this.player = this.engine.entityManager.createEntity("player");
         let sprite = this.player.add(SpriteComponent);
         let transform = this.player.add(Transform);
-        let playerComponent = this.player.add(PlayerComponent);
+        this.playerComponent = this.player.add(PlayerComponent);
         let particles = this.engine.get(ParticleSystem);
         
         let thrustDef:ParticleEmitterDef = {
@@ -44,8 +45,8 @@ export class PlayerSystem extends System {
             gravityCoefficient: 0.1,
         };
 
-        playerComponent.thrustEmitter = particles.addParticleEmitter(this.player, thrustDef);
-        playerComponent.thrustEmitter.enabled = true;
+        this.playerComponent.thrustEmitter = particles.addParticleEmitter(this.player, thrustDef);
+        this.playerComponent.thrustEmitter.enabled = false;
 
         //transform.pos = new Point(160, 0);
         transform.pos = this.engine.get(LevelSystem).playerStart;
@@ -62,8 +63,18 @@ export class PlayerSystem extends System {
 
         this.gamepad.onConnected(() => { console.log("Gamepad connected!")});
         this.gamepad.enable();
+
+        this.keyboard.addKeyDown(this.keyDown.bind(this));
     }
 
+    keyDown(key: number) {
+        console.log(key);
+        if (this.playerComponent.canDebug) {
+            if (key == "P".charCodeAt(0)) {
+                this.engine.get(PhysicsSystem).toggleDebug();
+            }
+        }
+    }
     static rotate(v: b2Vec2, r: number): b2Vec2 {
         let out = new b2Vec2;
         return b2Vec2.RotateV(v, r, out);
@@ -99,6 +110,7 @@ export class PlayerSystem extends System {
                 rotate += 1;
             }
         }
+
         if (rotate !== 0) {
           pc.body.ApplyTorque(rotate * 1000);
         }

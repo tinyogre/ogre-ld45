@@ -30,6 +30,8 @@ export class Entity {
         return c;
     }
     remove<T extends Component>(type: IComponentType<T>): void {
+        let c = this.get(type);
+        c.onDelete();
         this.components.delete(type.cname);
     }
 

@@ -9,6 +9,7 @@ import { PhysicsSystem } from "../engine/systems/PhysicsSystem";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { PlayerComponent } from "./PlayerComponent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
+import { b2BodyType } from "@flyover/box2d";
 
 export class PickupSystem extends System {
     static sname: string = "pickup";
@@ -22,7 +23,7 @@ export class PickupSystem extends System {
         // this.newPickup("engine", 300, 400, new Rectangle(8, 25, 16, 7));
     }
 
-    newPickup(what: string, x: number, y: number, r: Rectangle): Entity {
+    newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType): Entity {
         let e: Entity = this.engine.entityManager.createEntity(what);
         let t = e.add(Transform);
         let s = e.add(SpriteComponent);
@@ -32,7 +33,7 @@ export class PickupSystem extends System {
         let pickup = e.add(PickupComponent);
         pickup.what = what;
         t.pos.set(x, y);
-        this.physics.addBox(e, new Rectangle(-r.width / 2, -r.height / 2, r.width, r.height));
+        this.physics.addBox(e, new Rectangle(-r.width / 2, -r.height / 2, r.width, r.height), bodyType);
         e.get(PhysicsComponent).contactListener = this.onContact.bind(this);
         let attractDef = {
             sprite: "thrustparticle",

@@ -204,26 +204,39 @@ export class PhysicsSystem extends System {
         this.addShapeInternal(verts, type, pc, t);
     }
 
-    public addShape(e: Entity, shape: XY[]) {
+    public addShape(e: Entity, shape: XY[], bodyType?: b2BodyType) {
+        if (!bodyType) {
+            bodyType = b2BodyType.b2_dynamicBody;
+        }
         let pc = e.getOrAdd(PhysicsComponent);
         let t = e.get(Transform);
-        this.addShapeInternal(shape, b2BodyType.b2_dynamicBody, pc, t);
+        this.addShapeInternal(shape, bodyType, pc, t);
     }
 
-    createStatic(r: PIXI.Rectangle): Entity {
+    createStatic(r: PIXI.Rectangle, bodyType?: b2BodyType): Entity {
+        if (!bodyType) {
+            bodyType = b2BodyType.b2_staticBody;
+        }
         let e = this.engine.entityManager.createEntity("static");
         let pc = e.add(PhysicsComponent);
         let t = e.add(Transform);
         t.pos = new Point(r.x, r.y);
         let rr = new PIXI.Rectangle(0, 0, r.width, r.height);
-        this.addBoxInternal(rr, b2BodyType.b2_staticBody, pc, t);
+        this.addBoxInternal(rr, bodyType, pc, t);
         return e;
     }
 
-    addBox(e: Entity, rect: PIXI.Rectangle) {
+    addBox(e: Entity, rect: PIXI.Rectangle, bodyType?: b2BodyType) {
+        if (!bodyType) {
+            bodyType = b2BodyType.b2_dynamicBody;
+        }
         let pc = e.getOrAdd(PhysicsComponent);
         let t = e.get(Transform);
-        this.addBoxInternal(rect, b2BodyType.b2_dynamicBody, pc, t);
+        this.addBoxInternal(rect, bodyType, pc, t);
+    }
+
+    toggleDebug() {
+        this.setDebug(!this.debug);
     }
 
     setDebug(debug: boolean) {
@@ -245,5 +258,6 @@ export class PhysicsSystem extends System {
                 drs.remove(e);
             }
         }
+        this.debug = debug;
     }
 }

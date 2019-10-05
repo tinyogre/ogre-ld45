@@ -41,6 +41,7 @@ export class StarTwit {
         "ground001",
         "thrustparticle",
         "3x3bluewalls",
+        "wormhole",
     ]
     
     sound: Howl;
@@ -93,7 +94,7 @@ export class StarTwit {
         this.app.ticker.add((dt) => this.update(dt));
 
         let p = this.engine.get(PhysicsSystem);
-        //p.setDebug(true);
+        p.setDebug(true);
     }
 
     private createGround(physics: PhysicsSystem, x: number, y: number) {

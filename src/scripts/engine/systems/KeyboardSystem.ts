@@ -1,8 +1,14 @@
 import {System} from '../System'
 
+interface keyFn {
+    (key: number): void;
+}
+
 export class KeyboardSystem extends System {
     static sname = "keyboard";
     states: Set<number>;
+    keyDownCallbacks: keyFn[] = [];
+
     update(deltaTime: number): void {
     }
 
@@ -15,10 +21,17 @@ export class KeyboardSystem extends System {
 
     onKeyDown(ev: KeyboardEvent) {
         this.states.add(ev.keyCode);
+        for (let cb of this.keyDownCallbacks) {
+            cb(ev.keyCode);
+        }
     }
 
     onKeyUp(ev: KeyboardEvent) {
         this.states.delete(ev.keyCode);
+    }
+
+    addKeyDown(cb: keyFn) {
+        this.keyDownCallbacks.push(cb);
     }
 
     isKeyDown(...args: number[]): boolean {
