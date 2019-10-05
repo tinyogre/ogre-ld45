@@ -1,4 +1,5 @@
 import { Component } from "../component";
+import { Stage } from "pixi-layers";
 
 export class DebugRenderComponent extends Component {
     static cname = "debugrender";
@@ -14,6 +15,13 @@ export class DebugRenderComponent extends Component {
     removeFromStage(stage: PIXI.Container) {
         if (this.added) {
             stage.removeChild(this.g);
+            this.added = false;
+        }
+    }
+
+    onDelete() {
+        if (this.added) {
+            this.g.parent.removeChild(this.g);
             this.added = false;
         }
     }

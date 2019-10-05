@@ -11,6 +11,7 @@ import { Config } from "./config";
 import {StandardGamepad, StandardGamepadMapping, StandardGamepadButton} from "../third_party/standard-gamepad";
 import { StarTwit } from "./ogre-star-twit";
 import { XY, b2Vec2 } from "@flyover/box2d";
+import { PlayerComponent } from "./PlayerComponent";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
@@ -23,9 +24,11 @@ export class PlayerSystem extends System {
     startGame() {
         this.keyboard = this.engine.get(KeyboardSystem);
         let physics = this.engine.get(PhysicsSystem);
-        this.player = this.engine.entityManager.createEntity();
-        var sprite = this.player.add(SpriteComponent);
-        var transform = this.player.add(Transform);
+        this.player = this.engine.entityManager.createEntity("player");
+        let sprite = this.player.add(SpriteComponent);
+        let transform = this.player.add(Transform);
+        let playerComponent = this.player.add(PlayerComponent);
+        
         transform.pos = new Point(160, 0);
         transform.rotation = 0;
         //physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));

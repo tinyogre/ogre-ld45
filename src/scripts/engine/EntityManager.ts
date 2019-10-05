@@ -7,18 +7,40 @@ export class EntityManager {
     entities: Map<number, Entity> = new Map<number, Entity>();
     nextId: number = 1;
     engine: Engine;
+    toDelete: Entity[] = [];
 
     constructor(engine: Engine) {
         EntityManager.instance = this;
         this.engine = engine;
     }
 
-    public createEntity(): Entity{
+    public update() {
+        for (let e of this.toDelete) {
+            this.deleteNow(e);
+        }
+    }
+
+    public createEntity(name?: string): Entity{
         let e: Entity = new Entity();
+        if (name) {
+            e.debugName = name;
+        }
         e.engine = this.engine;
         e.id = this.nextId++;
         this.entities.set(e.id, e);
         return e;
+    }
+
+    public deleteEntity(e: Entity) {
+        this.toDelete.push(e);
+    }
+
+    public deleteNow(e: Entity) {
+        e.components.forEach((c, key, map) => {
+            c.onDelete();
+        })
+        this.entities.delete(e.id);
+        e.components.clear();
     }
 
     public getEntity(id: number): Entity {

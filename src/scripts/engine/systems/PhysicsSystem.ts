@@ -28,11 +28,21 @@ import { Config } from "../../app/config"
 export class xxxContactListener {
     /// Called when two fixtures begin to touch.
     public BeginContact(contact: b2Contact): void { 
-        console.log("BeginContext");
+        let a = contact.m_fixtureA.GetBody().m_userData as PhysicsComponent;
+        let b = contact.m_fixtureB.GetBody().m_userData as PhysicsComponent;
+        //console.log("BeginContact(" + a.entity.debugName + " => " + b.entity.debugName + ")");
+        if (a.contactListener) {
+            a.contactListener(a, b);
+        }
+        if (b.contactListener) {
+            b.contactListener(b, a);
+        }
     }
 
     /// Called when two fixtures cease to touch.
-    public EndContact(contact: b2Contact): void { }
+    public EndContact(contact: b2Contact): void { 
+        //console.log("End Contact");
+    }
 
     // #if B2_ENABLE_PARTICLE
     public BeginContactFixtureParticle(system: b2ParticleSystem, contact: b2ParticleBodyContact): void { }
@@ -170,6 +180,7 @@ export class PhysicsSystem extends System {
         let fixture = pc.body.CreateFixture(fd);
         let tPos = this.scalePoint(t.pos);
         pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);
+        pc.body.m_userData = pc;
     }
     getPoints(unscaled: XY[]): Point[] {
         let p: Point[] = [];
@@ -200,7 +211,7 @@ export class PhysicsSystem extends System {
     }
 
     createStatic(r: PIXI.Rectangle): Entity {
-        let e = this.engine.entityManager.createEntity();
+        let e = this.engine.entityManager.createEntity("static");
         let pc = e.add(PhysicsComponent);
         let t = e.add(Transform);
         t.pos = new Point(r.x, r.y);

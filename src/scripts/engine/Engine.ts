@@ -18,10 +18,12 @@ export class Engine {
         this.entityManager = new EntityManager(this);
     }
     
+    // I don't know why this isn't just a system too
     public entityManager: EntityManager;
 
     public update(deltaTime: number) {
         this.systems.forEach(s => s.update(deltaTime));
+        this.entityManager.update();
     }
 
     public add<T extends System>(type: ISystemType<T>) : T {

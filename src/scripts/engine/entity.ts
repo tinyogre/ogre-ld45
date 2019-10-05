@@ -8,6 +8,7 @@ export interface IComponentType<T extends Component> {
 
 export class Entity {
     engine: Engine;
+    public debugName: string;
     public id: number;
     public get<T extends Component>(type: IComponentType<T>) : T {
         return <T>this.components.get(type.cname)

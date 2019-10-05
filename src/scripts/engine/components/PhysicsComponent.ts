@@ -6,4 +6,12 @@ export class PhysicsComponent extends Component {
     body: b2Body;
     bounds: PIXI.Rectangle;
     shape: PIXI.Point[];
+    contactListener?: (self: PhysicsComponent, other: PhysicsComponent) => void;
+
+    onDelete() {
+        if (this.body) {
+            this.body.m_world.DestroyBody(this.body);
+            this.body = null as unknown as b2Body;
+        }
+    }
 }
