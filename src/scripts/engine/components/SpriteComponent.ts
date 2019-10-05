@@ -9,13 +9,13 @@ export class SpriteComponent extends Component {
     Load(asset: string): void {
         this.asset = asset;
         this.sprite = PIXI.Sprite.from(asset);
-        this.entity.engine.app.stage.addChild(this.sprite);
+        this.entity.engine.gameStage.addChild(this.sprite);
     }
 
     LoadFrame(inTexture: BaseTexture, frame: Rectangle) {
         let texture = new PIXI.Texture(inTexture, frame);
         this.sprite = PIXI.Sprite.from(texture);
-        this.entity.engine.app.stage.addChild(this.sprite);
+        this.entity.engine.gameStage.addChild(this.sprite);
     }
     
     onDelete() {

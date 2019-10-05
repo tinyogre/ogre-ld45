@@ -61,6 +61,13 @@ export class PickupSystem extends System {
             this.engine.get(LevelSystem).advance();
             return;
         }
+
+        if (pickup.what == "message") {
+            this.showMessage(pickup);
+            this.engine.entityManager.deleteEntity(self.entity);
+            return;
+        }
+
         let mySprite = self.entity.get(SpriteComponent);
         
         let newPlayerSprite = PIXI.Sprite.from(mySprite.asset);
@@ -74,6 +81,9 @@ export class PickupSystem extends System {
         }
 
         this.engine.entityManager.deleteEntity(self.entity);
+    }
+    
+    showMessage(pickup: PickupComponent) {
     }
 
     update(deltaTime: number): void {

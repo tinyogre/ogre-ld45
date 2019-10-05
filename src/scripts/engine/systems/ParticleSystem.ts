@@ -14,7 +14,7 @@ export class ParticleSystem extends System {
     startGame() {
         this.g = new PIXI.ParticleContainer();
         this.g.zIndex = -500;
-        this.engine.app.stage.addChild(this.g);
+        this.engine.gameStage.addChild(this.g);
     }
 
     update(deltaTime: number): void {

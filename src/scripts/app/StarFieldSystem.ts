@@ -19,7 +19,7 @@ export class StarFieldSystem extends System {
         ];
         
         let count = 500;
-        let stage = this.engine.app.stage;
+        let stage = this.engine.gameStage;
         stage.sortableChildren = true;
         let g = new PIXI.Graphics();
         g.zIndex = -1000;

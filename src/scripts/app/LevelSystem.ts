@@ -45,7 +45,7 @@ export class LevelSystem extends System {
         this.levelContainer = new PIXI.Container();
         this.physics = this.engine.get(PhysicsSystem);
         this.pickups = this.engine.get(PickupSystem);
-        this.engine.app.stage.addChild(this.levelContainer);
+        this.engine.gameStage.addChild(this.levelContainer);
         this.wallTexture = PIXI.BaseTexture.from("3x3bluewalls");
     }
 

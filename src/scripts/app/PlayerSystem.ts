@@ -92,6 +92,11 @@ export class PlayerSystem extends System {
                 this.engine.get(PhysicsSystem).toggleDebug();
             }
         }
+
+        // ESC
+        if (key == 27) {
+            this.engine.togglePause();
+        }
     }
     static rotate(v: b2Vec2, r: number): b2Vec2 {
         let out = new b2Vec2;
@@ -144,6 +149,6 @@ export class PlayerSystem extends System {
                 this.shotTimer = 1.0;
             }
         }
-        this.engine.app.stage.position = new Point(-t.pos.x + StarTwit.CANVAS_SIZE.x / 2, -t.pos.y + StarTwit.CANVAS_SIZE.y / 2);
+        this.engine.gameStage.position = new Point(-t.pos.x + StarTwit.CANVAS_SIZE.x / 2, -t.pos.y + StarTwit.CANVAS_SIZE.y / 2);
     }
 }

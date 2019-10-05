@@ -87,8 +87,6 @@ export class PixiAppWrapper extends EventEmitter {
 
         this.app = new PIXI.Application(options);
         document.body.appendChild(this.app.view);
-        //this.app.stage = new PIXI.display.Stage();
-        //this.app.stage = new PIXI.display.Stage();
 
         this.configure(options);
         this.ticker.add(this.resize.bind(this));

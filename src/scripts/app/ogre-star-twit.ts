@@ -81,7 +81,7 @@ export class StarTwit {
         this.engine.add(ParticleSystem);
 
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
-        debugRenderSystem.stage = this.app.stage;
+        debugRenderSystem.stage = this.engine.gameStage;
     }
 
     private startGame() {
