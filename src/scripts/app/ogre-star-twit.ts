@@ -16,6 +16,7 @@ import { DebugRenderSystem } from "../engine/systems/DebugRenderSystem";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 import { PickupSystem } from "./PickupSystem";
+import { StarFieldSystem } from "./StarFieldSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -70,6 +71,7 @@ export class StarTwit {
         this.engine.add(SpriteSystem);
         this.engine.add(PlayerSystem);
         this.engine.add(PickupSystem);
+        this.engine.add(StarFieldSystem);
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.app.stage;
     }
