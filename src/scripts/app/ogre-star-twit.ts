@@ -19,6 +19,7 @@ import { PickupSystem } from "./PickupSystem";
 import { StarFieldSystem } from "./StarFieldSystem";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { LevelSystem } from "./LevelSystem";
+import { MessageSystem } from "./MessageSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -81,7 +82,8 @@ export class StarTwit {
         this.engine.add(PlayerSystem);
         this.engine.add(StarFieldSystem);
         this.engine.add(ParticleSystem);
-
+        this.engine.add(MessageSystem);
+        
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.engine.gameStage;
     }
@@ -112,7 +114,7 @@ export class StarTwit {
         this.splash_screen.addChild(art);
         art.scale = new Point(2,2);
         this.app.stage.addChild(this.splash_screen);
-        this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 8, fill: 0xffffff, align: 'center'});
+        this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 10, fill: 0xffffff, align: 'center'});
         //this.statusText = new PIXI.Text("Loading...", { fontFamily: 'Courier', fontSize: 14, fill: 0xffffff, align: 'center' });
         this.splash_screen.addChild(this.statusText);
     }

@@ -11,15 +11,19 @@ import { PlayerComponent } from "./PlayerComponent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { b2BodyType } from "@flyover/box2d";
 import { LevelSystem } from "./LevelSystem";
+import { MessageSystem } from "./MessageSystem";
+import { GameEvent } from "./GameEvent";
 
 export class PickupSystem extends System {
     static sname: string = "pickup";
     physics: PhysicsSystem;
     particles: ParticleSystem;
+    messages: MessageSystem;
 
     startGame() {
         this.physics = this.engine.get(PhysicsSystem);
         this.particles = this.engine.get(ParticleSystem);
+        this.messages = this.engine.get(MessageSystem);
     }
 
     newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType): Entity {
@@ -64,10 +68,8 @@ export class PickupSystem extends System {
             return;
         }
 
-        if (pickup.what == "message") {
+        if (pickup.message) {
             this.showMessage(pickup);
-            this.engine.entityManager.deleteEntity(self.entity);
-            return;
         }
 
         let mySprite = self.entity.get(SpriteComponent);
@@ -77,15 +79,16 @@ export class PickupSystem extends System {
         other.entity.get(SpriteComponent).sprite.addChild(newPlayerSprite);
         
         if (pickup.what === "star") {
-            player.canSteer = true;
+            this.engine.events.emit(GameEvent.ADD_STEERING);
         } else if (pickup.what == "engine") {
-            player.canThrust = true;
+            this.engine.events.emit(GameEvent.ADD_THRUST);
         }
 
         this.engine.entityManager.deleteEntity(self.entity);
     }
     
     showMessage(pickup: PickupComponent) {
+        this.messages.addMessage(pickup.entity.get(Transform).pos, this.engine.gameStage, pickup.message!, 10, 0xffff00);
     }
 
     update(deltaTime: number): void {

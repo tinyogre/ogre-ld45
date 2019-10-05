@@ -17,12 +17,15 @@ import { ParticleEmitterDef } from "../engine/components/ParticleComponent";
 import { LevelSystem } from "./LevelSystem";
 import { GameEvent } from "./GameEvent";
 import { Level } from "./Levels";
+import { MessageSystem } from "./MessageSystem";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
     player?: Entity;
     playerComponent: PlayerComponent;
     keyboard: KeyboardSystem;
+    messages: MessageSystem;
+
     mapping: StandardGamepadMapping = new StandardGamepadMapping();
     gamepad: StandardGamepad = new StandardGamepad(navigator, window, this.mapping);
     shotTimer: number = 0;
@@ -31,10 +34,13 @@ export class PlayerSystem extends System {
         this.keyboard = this.engine.get(KeyboardSystem);
         this.engine.events.addListener(GameEvent.START_LEVEL, this.startLevel.bind(this));
         this.engine.events.addListener(GameEvent.END_LEVEL, this.endLevel.bind(this));
+        this.engine.events.addListener(GameEvent.ADD_STEERING, this.addSteering.bind(this));
+        this.engine.events.addListener(GameEvent.ADD_THRUST, this.addThrust.bind(this));
         this.keyboard.addKeyDown(this.keyDown.bind(this));
 
         this.gamepad.onConnected(() => { console.log("Gamepad connected!") });
         this.gamepad.enable();
+        this.messages = this.engine.get(MessageSystem);
     }
 
     endLevel() {
@@ -149,5 +155,15 @@ export class PlayerSystem extends System {
             }
         }
         this.engine.gameStage.position = new Point(-t.pos.x + StarTwit.CANVAS_SIZE.x / 2, -t.pos.y + StarTwit.CANVAS_SIZE.y / 2);
+    }
+
+    addSteering() {
+        this.playerComponent.canSteer = true;
+        this.messages.addMessage(new Point(320, 450), this.engine.uiStage, "A or Left: Turn Left\nD or Right: Turn Right", 9000, 0x8888ff);
+    }
+
+    addThrust() {
+        this.playerComponent.canThrust = true;
+        this.messages.addMessage(new Point(320, 470), this.engine.uiStage, "W or Up: Thrust", 9000, 0x8888ff);
     }
 }

@@ -11,6 +11,8 @@ import { LevelObjectComponent } from "./LevelObjectComponent";
 import { GameEvent } from "./GameEvent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { ParticleDef } from "../engine/components/ParticleComponent";
+import { PickupComponent } from "../engine/components/PickupComponent";
+import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 
 export class LevelSystem extends System {
     static sname = "levelsystem";
@@ -73,6 +75,18 @@ export class LevelSystem extends System {
                 } else if (c === "O") {
                     e = this.pickups.newPickup("wormhole", worldX, worldY, new Rectangle(0, 0, 64, 64), b2BodyType.b2_kinematicBody);
                     this.particles.addParticleEmitter(e, ParticleDef.WORMHOLE);
+                }
+
+                if (level.messages[c]) {
+                    if (!e) {
+                        e = this.pickups.newPickup("message", worldX, worldY, new Rectangle(0,0,32,32), b2BodyType.b2_kinematicBody);
+                        let fixture = e.get(PhysicsComponent).body.GetFixtureList();
+                        while (fixture) {
+                            fixture.m_isSensor = true;
+                            fixture = fixture.m_next;
+                        }
+                    }
+                    e.get(PickupComponent).message = level.messages[c];
                 }
                 if (e) {
                     e.getOrAdd(LevelObjectComponent);
