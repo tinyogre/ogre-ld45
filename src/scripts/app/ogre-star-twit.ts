@@ -17,6 +17,7 @@ import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 import { PickupSystem } from "./PickupSystem";
 import { StarFieldSystem } from "./StarFieldSystem";
+import { ParticleSystem } from "../engine/systems/ParticleSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -37,6 +38,7 @@ export class StarTwit {
         "star",
         "engine",
         "ground001",
+        "thrustparticle",
     ]
     
     sound: Howl;
@@ -72,6 +74,8 @@ export class StarTwit {
         this.engine.add(PlayerSystem);
         this.engine.add(PickupSystem);
         this.engine.add(StarFieldSystem);
+        this.engine.add(ParticleSystem);
+
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.app.stage;
     }
@@ -86,7 +90,7 @@ export class StarTwit {
         this.app.ticker.add((dt) => this.update(dt));
 
         let p = this.engine.get(PhysicsSystem);
-        p.setDebug(true);
+        //p.setDebug(true);
     }
 
     private createGround(physics: PhysicsSystem, x: number, y: number) {

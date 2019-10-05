@@ -8,13 +8,16 @@ import { Point, Rectangle, Sprite } from "pixi.js";
 import { PhysicsSystem } from "../engine/systems/PhysicsSystem";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { PlayerComponent } from "./PlayerComponent";
+import { ParticleSystem } from "../engine/systems/ParticleSystem";
 
 export class PickupSystem extends System {
     static sname: string = "pickup";
     physics: PhysicsSystem;
+    particles: ParticleSystem;
 
     startGame() {
         this.physics = this.engine.get(PhysicsSystem);
+        this.particles = this.engine.get(ParticleSystem);
         this.newPickup("star", 160, 440, new Rectangle(9, 10, 14, 15));
         this.newPickup("engine", 300, 400, new Rectangle(8, 25, 16, 7));
     }
@@ -31,6 +34,18 @@ export class PickupSystem extends System {
         t.pos.set(x, y);
         this.physics.addBox(e, new Rectangle(-r.width / 2, -r.height / 2, r.width, r.height));
         e.get(PhysicsComponent).contactListener = this.onContact.bind(this);
+        let attractDef = {
+            sprite: "thrustparticle",
+            permanent: true,
+            rotation: 0,
+            arc: 2 * Math.PI,
+            particleDuration: 0.2,
+            emitterDuration: 100000,
+            spawnPerSecond: 20,
+            velocity: 50,
+            gravityCoefficient: 0,
+        };
+        this.particles.addParticleEmitter(e, attractDef);
         return e;
     }
 

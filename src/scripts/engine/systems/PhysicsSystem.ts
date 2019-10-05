@@ -176,7 +176,7 @@ export class PhysicsSystem extends System {
         let fd = new b2FixtureDef();
         fd.shape = box;
         fd.density = 1.0;
-        fd.friction = 0.3;
+        fd.friction = 5;
         let fixture = pc.body.CreateFixture(fd);
         let tPos = this.scalePoint(t.pos);
         pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);

@@ -12,6 +12,8 @@ import {StandardGamepad, StandardGamepadMapping, StandardGamepadButton} from "..
 import { StarTwit } from "./ogre-star-twit";
 import { XY, b2Vec2 } from "@flyover/box2d";
 import { PlayerComponent } from "./PlayerComponent";
+import { ParticleSystem } from "../engine/systems/ParticleSystem";
+import { ParticleEmitterDef } from "../engine/components/ParticleComponent";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
@@ -28,7 +30,22 @@ export class PlayerSystem extends System {
         let sprite = this.player.add(SpriteComponent);
         let transform = this.player.add(Transform);
         let playerComponent = this.player.add(PlayerComponent);
+        let particles = this.engine.get(ParticleSystem);
         
+        let thrustDef:ParticleEmitterDef = {
+            sprite: "thrustparticle",
+            permanent: true,            
+            rotation: 0.5 * Math.PI,
+            arc: 0.1 * Math.PI,
+            particleDuration: 2,
+            spawnPerSecond: 50,
+            velocity: 50,
+            gravityCoefficient: 0.1,
+        };
+
+        playerComponent.thrustEmitter = particles.addParticleEmitter(this.player, thrustDef);
+        playerComponent.thrustEmitter.enabled = true;
+
         transform.pos = new Point(160, 0);
         transform.rotation = 0;
         //physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));
@@ -65,7 +82,10 @@ export class PlayerSystem extends System {
 
         if (player.canThrust) {
             if (this.keyboard.isKeyDown(87, 38) || buttons.includes(StandardGamepadButton.A)) {
-                pc.body.ApplyForce(PlayerSystem.rotate(new b2Vec2(0, -1000), t.rotation), pc.body.GetWorldCenter());
+                pc.body.ApplyForce(PlayerSystem.rotate(new b2Vec2(0, -Config.playerThrust), t.rotation), pc.body.GetWorldCenter());
+                player.thrustEmitter.enabled = true;
+            } else {
+                player.thrustEmitter.enabled = false;
             }
         }
 

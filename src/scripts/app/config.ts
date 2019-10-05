@@ -4,4 +4,6 @@ export class Config {
     static physicsScale = 0.25;
 
     static gravity = 1.62;
+
+    static playerThrust = 750;
 }
