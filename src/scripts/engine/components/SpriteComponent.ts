@@ -8,5 +8,6 @@ export class SpriteComponent extends Component {
 
     Load(asset: string): void {
         this.sprite = PIXI.Sprite.from(asset);
+        this.entity.engine.app.stage.addChild(this.sprite);
     }
 }

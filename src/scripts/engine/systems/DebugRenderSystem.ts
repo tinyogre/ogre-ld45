@@ -39,6 +39,17 @@ export class DebugRenderSystem extends System {
         dc.addToStage(this.stage);
     }
 
+    addShape(e: Entity, points: Point[], color: number) {
+        let dc = e.getOrAdd(DebugRenderComponent);
+        let g = dc.g;
+        if (!g) {
+            g = dc.g = new PIXI.Graphics();
+        }
+        g.lineStyle(1, color);
+        g.drawPolygon(points);
+        dc.addToStage(this.stage);
+    }
+
     remove(e: Entity) {
         e.remove(DebugRenderComponent);
     }

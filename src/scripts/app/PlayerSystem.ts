@@ -6,11 +6,11 @@ import { Point, Rectangle } from "pixi.js";
 import { PhysicsSystem } from "../engine/systems/PhysicsSystem";
 import { Entity } from "../engine/entity";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
-import { b2Vec2 } from "@flyover/box2d";
 import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 import { Config } from "./config";
 import {StandardGamepad, StandardGamepadMapping, StandardGamepadButton} from "../third_party/standard-gamepad";
 import { StarTwit } from "./ogre-star-twit";
+import { XY, b2Vec2 } from "@flyover/box2d";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
@@ -28,11 +28,15 @@ export class PlayerSystem extends System {
         var transform = this.player.add(Transform);
         transform.pos = new Point(160, 0);
         transform.rotation = 0;
-        physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));
+        //physics.addBox(this.player, new Rectangle(-16, -16, 32, 32));
+        let shape:XY[] = [
+            { x: -16, y: 16},
+            { x: 16, y: 16 },
+            { x: 0, y: -16 },
+        ]
+        physics.addShape(this.player, shape);
         sprite.Load('ship');
         sprite.sprite.pivot = new Point(16, 16);
-        //sprite.sprite.pivot = transform.pivot;
-        this.engine.app.stage.addChild(this.player.get(SpriteComponent).sprite);
 
         this.gamepad.onConnected(() => { console.log("Gamepad connected!")});
         this.gamepad.enable();

@@ -24,8 +24,19 @@ export class StarTwit {
     assets: Asset[] = [
         {id: "splash_screen", url: "assets/gfx/splash_screen.png", priority: AssetPriority.HIGHEST, type: "texture" },
         {id: "press_start_2p", url: "assets/fonts/PressStart2p.ttf", priority: AssetPriority.HIGHEST, type: "font" },
-        {id: "ship", url: "assets/gfx/ship.png", priority: AssetPriority.HIGH, type: "texture"},
+        // {id: "ship", url: "assets/gfx/ship.png", priority: AssetPriority.HIGH, type: "texture"},
+        // { id: "star", url: "assets/gfx/star.png", priority: AssetPriority.HIGH, type: "texture" },
+        // { id: "engine", url: "assets/gfx/engine.png", priority: AssetPriority.HIGH, type: "texture" },
+        // { id: "ground", url: "assets/gfx/ground.png", priority: AssetPriority.HIGH, type: "texture" },
     ];
+
+    gameTextures: string[] = [
+        "ship",
+        "star",
+        "engine",
+        "ground001",
+    ]
+    
     sound: Howl;
     engine: Engine;
     statusText: PIXI.Text;
@@ -45,6 +56,10 @@ export class StarTwit {
         this.app.renderer.backgroundColor = 0x000040;
         this.loader = new PixiAssetsLoader();
         this.loader.on(PixiAssetsLoader.PRIORITY_GROUP_LOADED, this.onAssetsLoaded.bind(this));
+        for (let g of this.gameTextures) {
+            let a: Asset = { id: g, url: "assets/gfx/" + g + ".png", priority: AssetPriority.HIGH, type: "texture" }; 
+            this.assets.push(a);
+        }
         this.loader.addAssets(this.assets).load();
 
         this.engine = new Engine(this.app);
@@ -60,14 +75,15 @@ export class StarTwit {
     private startGame() {
         let physics:PhysicsSystem = this.engine.get(PhysicsSystem);
         let e = physics.createStatic(new PIXI.Rectangle(0, 230, 320, 10));
+        let s = e.add(SpriteComponent);
+        s.Load("ground001");
+        s.sprite.pivot = new Point(0,0);
 
         this.engine.startGame();
         this.app.ticker.add((dt) => this.update(dt));
 
         let p = this.engine.get(PhysicsSystem);
-        if (p) {
-            p.setDebug(true);
-        }
+        p.setDebug(true);
     }
 
     private startMenu() {

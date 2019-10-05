@@ -5,4 +5,5 @@ export class PhysicsComponent extends Component {
     static cname = "physics";
     body: b2Body;
     bounds: PIXI.Rectangle;
+    shape: PIXI.Point[];
 }

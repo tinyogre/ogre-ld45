@@ -101,6 +101,15 @@ export class PhysicsSystem extends System {
             r.height * Config.physicsScale);
     }
 
+    private scaleShape(shape:XY[]) : XY[] {
+        let ret:XY[] = [];
+        for (let p of shape) {
+            let scaled = { x: p.x * Config.physicsScale, y: p.y * Config.physicsScale};
+            ret.push(scaled);
+        }
+        return ret;
+    }
+
     private scalePoint(p: Point) : Point {
         return new Point(p.x * Config.physicsScale, p.y * Config.physicsScale);
     }
@@ -117,12 +126,60 @@ export class PhysicsSystem extends System {
         return new Point(p.x / Config.physicsScale, p.y / Config.physicsScale);
     }
 
-    private addBoxInternal(r: PIXI.Rectangle, type: b2BodyType, pc: PhysicsComponent, t: Transform) {
+    getBounds(verts: XY[]): Rectangle {
+        let min: XY = new b2Vec2(verts[0].x, verts[0].y);
+        let max: XY = new b2Vec2(verts[0].x, verts[0].y);
+        for (let p of verts) {
+            if (p.x < min.x) {
+                min.x = p.x;
+            }
+            if (p.y < min.y) {
+                min.y = p.y;
+            }
+            if (p.x > max.x) {
+                max.x = p.x;
+            }
+            if (p.y > max.y) {
+                max.y = p.y;
+            }
+        }
+        return new Rectangle(min.x, min.y, max.x - min.x, max.y - min.y);
+    }
+
+    private addShapeInternal(unscaled: XY[], type: b2BodyType, pc: PhysicsComponent, t: Transform) {
+        let verts = this.scaleShape(unscaled);
         let def = new b2BodyDef();
         def.type = type;
         def.position.Set(0, 0);
         pc.body = this.world.CreateBody(def);
         let box = new b2PolygonShape();
+        // let verts:XY[] = [
+        //     {x: 0, y: 0},
+        //     {x: r.width, y: 0},
+        //     {x: r.width, y: r.height},
+        //     {x: 0, y: r.height}
+        // ];
+        box.Set(verts);
+        //box.SetAsBox(r.width/2, r.height/2, new b2Vec2(r.width / 2, r.height / 2));
+        pc.bounds = this.unscaleRect(this.getBounds(verts)); //this.unscaleRect(new PIXI.Rectangle(0, 0, r.width, r.height));
+        pc.shape = this.getPoints(unscaled);
+        let fd = new b2FixtureDef();
+        fd.shape = box;
+        fd.density = 1.0;
+        fd.friction = 0.3;
+        let fixture = pc.body.CreateFixture(fd);
+        let tPos = this.scalePoint(t.pos);
+        pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);
+    }
+    getPoints(unscaled: XY[]): Point[] {
+        let p: Point[] = [];
+        for (let xy of unscaled) {
+            p.push(new Point(xy.x, xy.y));
+        }
+        return p;
+    }
+
+    private addBoxInternal(r: PIXI.Rectangle, type: b2BodyType, pc: PhysicsComponent, t: Transform) {
         let verts:XY[] = [
             {x: 0, y: 0},
             {x: r.width, y: 0},
@@ -133,22 +190,13 @@ export class PhysicsSystem extends System {
             v.x += r.left;
             v.y += r.top;
         }
-        // let verts:XY[] = [
-        //     {x: 0, y: 0},
-        //     {x: r.width, y: 0},
-        //     {x: r.width, y: r.height},
-        //     {x: 0, y: r.height}
-        // ];
-        box.Set(verts);
-        //box.SetAsBox(r.width/2, r.height/2, new b2Vec2(r.width / 2, r.height / 2));
-        pc.bounds = this.unscaleRect(r); //this.unscaleRect(new PIXI.Rectangle(0, 0, r.width, r.height));
-        let fd = new b2FixtureDef();
-        fd.shape = box;
-        fd.density = 1.0;
-        fd.friction = 0.3;
-        let fixture = pc.body.CreateFixture(fd);
-        let tPos = this.scalePoint(t.pos);
-        pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);
+        this.addShapeInternal(verts, type, pc, t);
+    }
+
+    public addShape(e: Entity, shape: XY[]) {
+        let pc = e.getOrAdd(PhysicsComponent);
+        let t = e.get(Transform);
+        this.addShapeInternal(shape, b2BodyType.b2_dynamicBody, pc, t);
     }
 
     createStatic(r: PIXI.Rectangle): Entity {
@@ -157,12 +205,11 @@ export class PhysicsSystem extends System {
         let t = e.add(Transform);
         t.pos = new Point(r.x, r.y);
         let rr = new PIXI.Rectangle(0, 0, r.width, r.height);
-        this.addBoxInternal(this.scaleRect(rr), b2BodyType.b2_staticBody, pc, t);
+        this.addBoxInternal(rr, b2BodyType.b2_staticBody, pc, t);
         return e;
     }
 
     addBox(e: Entity, rect: PIXI.Rectangle) {
-        rect = this.scaleRect(rect);
         let pc = e.getOrAdd(PhysicsComponent);
         let t = e.get(Transform);
         this.addBoxInternal(rect, b2BodyType.b2_dynamicBody, pc, t);
@@ -180,8 +227,9 @@ export class PhysicsSystem extends System {
         for (let e of comps) {
             let pc = e.get(PhysicsComponent);
             if (debug) {
-                drs.addBox(e, new Point(pc.bounds.left, pc.bounds.top), 
-                    new Point(pc.bounds.width, pc.bounds.height), 0xff00ff);
+                //drs.addBox(e, new Point(pc.bounds.left, pc.bounds.top), 
+                //    new Point(pc.bounds.width, pc.bounds.height), 0xff00ff);
+                drs.addShape(e, pc.shape, 0xff00ff);
             } else {
                 drs.remove(e);
             }
