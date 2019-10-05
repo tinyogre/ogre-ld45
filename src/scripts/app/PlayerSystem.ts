@@ -15,10 +15,12 @@ import { PlayerComponent } from "./PlayerComponent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { ParticleEmitterDef } from "../engine/components/ParticleComponent";
 import { LevelSystem } from "./LevelSystem";
+import { GameEvent } from "./GameEvent";
+import { Level } from "./Levels";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
-    player: Entity;
+    player?: Entity;
     playerComponent: PlayerComponent;
     keyboard: KeyboardSystem;
     mapping: StandardGamepadMapping = new StandardGamepadMapping();
@@ -27,10 +29,27 @@ export class PlayerSystem extends System {
 
     startGame() {
         this.keyboard = this.engine.get(KeyboardSystem);
-        let physics = this.engine.get(PhysicsSystem);
+        this.engine.events.addListener(GameEvent.START_LEVEL, this.startLevel.bind(this));
+        this.engine.events.addListener(GameEvent.END_LEVEL, this.endLevel.bind(this));
+    }
+
+    endLevel() {
+        if (this.player) {
+            this.engine.entityManager.deleteNow(this.player);
+        }
+        this.player = undefined;
+    }
+
+    startLevel(level: Level) {
+        this.spawnPlayer();
+    }
+
+    spawnPlayer() {
         this.player = this.engine.entityManager.createEntity("player");
         let sprite = this.player.add(SpriteComponent);
+
         let transform = this.player.add(Transform);
+        let physics = this.engine.get(PhysicsSystem);
         this.playerComponent = this.player.add(PlayerComponent);
         let particles = this.engine.get(ParticleSystem);
         
@@ -80,6 +99,10 @@ export class PlayerSystem extends System {
     }
 
     update(deltaTime: number): void {
+        if (!this.player) {
+            return;
+        }
+
         let rotate: number = 0;
         let pc = this.player.get(PhysicsComponent);
         let t = this.player.get(Transform);

@@ -10,6 +10,7 @@ import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { PlayerComponent } from "./PlayerComponent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { b2BodyType } from "@flyover/box2d";
+import { LevelSystem } from "./LevelSystem";
 
 export class PickupSystem extends System {
     static sname: string = "pickup";
@@ -19,8 +20,6 @@ export class PickupSystem extends System {
     startGame() {
         this.physics = this.engine.get(PhysicsSystem);
         this.particles = this.engine.get(ParticleSystem);
-        // this.newPickup("star", 160, 440, new Rectangle(9, 10, 14, 15));
-        // this.newPickup("engine", 300, 400, new Rectangle(8, 25, 16, 7));
     }
 
     newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType): Entity {
@@ -57,6 +56,11 @@ export class PickupSystem extends System {
         }
         let pickup = self.entity.get(PickupComponent);
         console.log("Pickup " + pickup.what + " touched player");
+
+        if (pickup.what == "wormhole") {
+            this.engine.get(LevelSystem).advance();
+            return;
+        }
         let mySprite = self.entity.get(SpriteComponent);
         
         let newPlayerSprite = PIXI.Sprite.from(mySprite.asset);

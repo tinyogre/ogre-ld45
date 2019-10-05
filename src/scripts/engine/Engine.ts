@@ -2,6 +2,7 @@
 import {System} from "./System";
 import { EntityManager } from "./EntityManager";
 import { PixiAppWrapper } from "pixi-app-wrapper";
+import { EventEmitter } from "events";
 
 export interface ISystemType<T extends System> {
     new(...args: any[]): T;
@@ -9,6 +10,7 @@ export interface ISystemType<T extends System> {
 }
 
 export class Engine {
+    events: EventEmitter = new EventEmitter();
     systems: System[] = [];
     systemMap: Map<string, System> = new Map<string, System>();
     app: PixiAppWrapper;
