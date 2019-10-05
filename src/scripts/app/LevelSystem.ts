@@ -20,6 +20,7 @@ export class LevelSystem extends System {
     static sname = "levelsystem";
 
     wallTexture: PIXI.BaseTexture;
+    physicsObjectTexture: PIXI.Texture;
     levelContainer: PIXI.Container;
     physics: PhysicsSystem;
     playerStart: Point;
@@ -28,7 +29,8 @@ export class LevelSystem extends System {
     levels: Level[] = [
 //        Levels.level1,
 //        Levels.level2,
-        Levels.level3,
+//        Levels.level3,
+        Levels.level4,
     ];
     particles: ParticleSystem;
     pickups: PickupSystem;
@@ -65,6 +67,7 @@ export class LevelSystem extends System {
         this.pickups = this.engine.get(PickupSystem);
         this.engine.gameStage.addChild(this.levelContainer);
         this.wallTexture = PIXI.BaseTexture.from("3x3bluewalls");
+        this.physicsObjectTexture = PIXI.Texture.from("physicstile");
         this.particles = this.engine.get(ParticleSystem);
     }
 
@@ -91,7 +94,19 @@ export class LevelSystem extends System {
                     e.get(PhysicsComponent).body.GetFixtureList()!.m_isSensor = true;
                 } else if (c === "G") {
                     e = this.pickups.newPickup("turret", worldX, worldY, new Rectangle(10, 4, 12, 18))
+                } else if (c == "-") {
+                    let start = x;
+                    for (x = x + 1; x < row.length; x++) {
+                        c = row[x];
+                        if (c != "-") {
+                            x--;
+                            break;
+                        }
+                    }
+                    let len = x - start + 1;
+                    this.createHorizontalBeam(worldX, worldY, len);
                 }
+
 
                 if (level.messages[c]) {
                     if (!e) {
@@ -117,6 +132,27 @@ export class LevelSystem extends System {
         }
 
         this.engine.events.emit(GameEvent.START_LEVEL, level)
+    }
+    // createPhysicsTile(x: number, y: number) {
+    //     let e = this.physics.createStatic(new PIXI.Rectangle(x, y, Config.tileSize, Config.tileSize), b2BodyType.b2_dynamicBody);
+    //     let s = e.add(SpriteComponent);
+    //     let t = this.physicsObjectTexture;
+    //     s.LoadFrame(t, new Rectangle(0, 0, Config.tileSize, Config.tileSize));
+    //     s.sprite.pivot = new Point(0, 0);
+    //     return e;
+    // }
+
+    createHorizontalBeam(x: number, y: number, count: number) {
+        let e = this.physics.createStatic(new PIXI.Rectangle(x, y, count * Config.tileSize, Config.tileSize), b2BodyType.b2_dynamicBody);
+        let s = e.add(SpriteComponent);
+        s.Load("this is not a real asset");
+        let t = this.physicsObjectTexture;
+        for (let i = 0; i < count; i++) {
+            let tile = PIXI.Sprite.from(t);
+            tile.pivot = new Point(0,0);
+            tile.position = new Point(i * Config.tileSize, 0);
+            s.sprite.addChild(tile);
+        }
     }
 
     private createGround(x: number, y: number): Entity {

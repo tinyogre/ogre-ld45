@@ -36,8 +36,8 @@ export class Levels {
         ],
         messages: {
             "1": "Oh no!  Where are all my ship parts?! I can't do anything...",
-            "2": "Look!  Below!  It's my engine!",
-            "T": "I got my main engine back!\nMaybe now I can reach that wormhole?",
+            "2": "Look below!  It's my engine!",
+            "T": "I got my main engine back!\nMaybe now I can reach that wormhole up there?",
         },
         events: []
     };
@@ -63,7 +63,7 @@ export class Levels {
         ],
         messages: {
             "1": "Again? Really?",
-            "S": "I got my cockpit back this time, now I can turn..."
+            "S": "I got my controls back this time, now I can turn..."
         },
         events: []
     };
@@ -82,7 +82,7 @@ export class Levels {
             "W..........W.......W......W",
             "W..........W....O..W......W",
             "W..........WWWWWWWWW......W",
-            "W.........................W",
+            "W.........................W",                                                  
             "W.........................W",
             "W.........................W",
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
@@ -92,6 +92,30 @@ export class Levels {
         },
         events: [
             [GameEvent.FIRED_SHOT, (engine) => LevelSystem.checkFirstShot(engine)],
+        ]
+    };
+    static level4: Level = {
+        map: [
+            "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
+            "W.S.......................W",
+            "W.P.......................W",
+            "W.T.......................W",
+            "W.........................W",
+            "W.........................W",
+            "WWWWWWW.--------WWWWWWWWWWW",
+            "W.....WWWWWW..............W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",
+            "W....................O....W",
+            "W.........................W",
+            "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        ],              
+        messages: {     
+        },
+        events: [
         ]
     };
 }
