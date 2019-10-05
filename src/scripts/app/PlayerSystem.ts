@@ -35,7 +35,7 @@ export class PlayerSystem extends System {
         let thrustDef:ParticleEmitterDef = {
             sprite: "thrustparticle",
             permanent: true,            
-            rotation: 0.5 * Math.PI,
+            rotation: 0.45 * Math.PI,
             arc: 0.1 * Math.PI,
             particleDuration: 2,
             spawnPerSecond: 50,

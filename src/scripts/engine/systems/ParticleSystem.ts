@@ -80,8 +80,8 @@ export class ParticleSystem extends System {
         let physicsVelocity = physics.body.GetLinearVelocity();
         let direction = Math.random() * e.def.arc + e.def.rotation + t.rotation;
         let particle = new Particle();
-        particle.velocity.x = Math.cos(direction) * e.def.velocity + physicsVelocity.x;
-        particle.velocity.y = Math.sin(direction) * e.def.velocity + physicsVelocity.y;
+        particle.velocity.x = Math.cos(direction) * e.def.velocity + physicsVelocity.x / Config.physicsScale;
+        particle.velocity.y = Math.sin(direction) * e.def.velocity + physicsVelocity.y / Config.physicsScale;
         particle.g = PIXI.Sprite.from(e.def.sprite);
         particle.pos = new Point(t.pos.x, t.pos.y);
         particle.ttl = e.def.particleDuration;

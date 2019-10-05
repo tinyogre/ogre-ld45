@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                families: ['Press Start 2P']
+            },
+            active: e => {
+                console.log("font loaded!");
+                // now start setting up your PixiJS (or canvas) stuff!
+            }
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes">

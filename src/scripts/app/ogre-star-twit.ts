@@ -5,7 +5,7 @@ import {
     PixiAppWrapperOptions as WrapperOpts,
 } from "../third_party/pixi-app-wrapper";
 import { PixiAssetsLoader, Asset, AssetPriority, SoundAsset, LoadAsset } from "../third_party/pixi-assets-loader";
-import { SCALE_MODES, Point, Rectangle, Sprite } from "pixi.js";
+import { SCALE_MODES, Point, Rectangle, Sprite, Container } from "pixi.js";
 import { Entity } from "../engine/entity";
 import { SpriteComponent } from "../engine/components/SpriteComponent";
 import { PhysicsSystem } from "../engine/systems/PhysicsSystem";
@@ -22,11 +22,11 @@ import { ParticleSystem } from "../engine/systems/ParticleSystem";
 export class StarTwit {
     app: PixiAppWrapper;
     loader: PixiAssetsLoader;
-    splash_screen: Sprite;
+    splash_screen: Container;
 
     assets: Asset[] = [
         {id: "splash_screen", url: "assets/gfx/splash_screen.png", priority: AssetPriority.HIGHEST, type: "texture" },
-        {id: "press_start_2p", url: "assets/fonts/PressStart2p.ttf", priority: AssetPriority.HIGHEST, type: "font" },
+        // {id: "press_start_2p", url: "assets/fonts/PressStart2p.ttf", priority: AssetPriority.HIGHEST, type: "font" },
         // {id: "ship", url: "assets/gfx/ship.png", priority: AssetPriority.HIGH, type: "texture"},
         // { id: "star", url: "assets/gfx/star.png", priority: AssetPriority.HIGH, type: "texture" },
         // { id: "engine", url: "assets/gfx/engine.png", priority: AssetPriority.HIGH, type: "texture" },
@@ -101,10 +101,13 @@ export class StarTwit {
     }
 
     private startMenu() {
-        this.splash_screen = PIXI.Sprite.from('splash_screen');
-        this.splash_screen.scale = new Point(2,2);
+        this.splash_screen = new PIXI.Container();
+        let art = PIXI.Sprite.from('splash_screen');
+        this.splash_screen.addChild(art);
+        art.scale = new Point(2,2);
         this.app.stage.addChild(this.splash_screen);
         this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 8, fill: 0xffffff, align: 'center'});
+        //this.statusText = new PIXI.Text("Loading...", { fontFamily: 'Courier', fontSize: 14, fill: 0xffffff, align: 'center' });
         this.splash_screen.addChild(this.statusText);
     }
 
