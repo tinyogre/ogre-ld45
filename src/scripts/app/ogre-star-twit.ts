@@ -15,6 +15,7 @@ import { Engine } from "../engine/Engine";
 import { DebugRenderSystem } from "../engine/systems/DebugRenderSystem";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
+import { PickupSystem } from "./PickupSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -68,22 +69,29 @@ export class StarTwit {
         this.engine.add(PhysicsSystem);
         this.engine.add(SpriteSystem);
         this.engine.add(PlayerSystem);
+        this.engine.add(PickupSystem);
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.app.stage;
     }
 
     private startGame() {
         let physics:PhysicsSystem = this.engine.get(PhysicsSystem);
-        let e = physics.createStatic(new PIXI.Rectangle(0, 230, 320, 10));
-        let s = e.add(SpriteComponent);
-        s.Load("ground001");
-        s.sprite.pivot = new Point(0,0);
+        this.createGround(physics, 0, 470);
+        this.createGround(physics, 320, 470);
+        this.createGround(physics, -320, 470);
 
         this.engine.startGame();
         this.app.ticker.add((dt) => this.update(dt));
 
         let p = this.engine.get(PhysicsSystem);
         p.setDebug(true);
+    }
+
+    private createGround(physics: PhysicsSystem, x: number, y: number) {
+        let e = physics.createStatic(new PIXI.Rectangle(x, y, 320, 10));
+        let s = e.add(SpriteComponent);
+        s.Load("ground001");
+        s.sprite.pivot = new Point(0, 0);
     }
 
     private startMenu() {

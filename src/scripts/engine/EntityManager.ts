@@ -26,7 +26,11 @@ export class EntityManager {
     }
     getAll<T extends Component>(type: IComponentType<T>): Entity[] {
         let r: Entity[] = [];
-        this.entities.forEach(e => r.push(e));
+        this.entities.forEach(e => {
+            if (e.get(type)) {
+                r.push(e);
+            }
+        });
         return r;
     }
 }
