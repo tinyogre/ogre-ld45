@@ -257,6 +257,7 @@ export class LevelSystem extends System {
         velocity: 20,
         gravityCoefficient: 10,
         spawnRadius: 30,
+        foreground: true,
     };
 
     doExplosion(p: Point) {
