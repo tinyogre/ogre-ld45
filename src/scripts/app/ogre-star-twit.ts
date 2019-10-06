@@ -88,7 +88,8 @@ export class StarTwit {
     soundSystem: SoundSystem;
     keyboard: KeyboardSystem;
     inGame: boolean = false;
-    enableLevelCheat = true;
+    enableLevelCheat = false;
+    timerScore: TimeScoreSystem;
 
     static CANVAS_SIZE: Point = new Point(640, 480);
 
@@ -132,7 +133,7 @@ export class StarTwit {
         this.engine.add(MessageSystem);
         this.engine.add(TtlSystem);
         this.engine.add(MoverSystem);
-        this.engine.add(TimeScoreSystem);
+        this.timerScore = this.engine.add(TimeScoreSystem);
         this.soundSystem = this.engine.add(SoundSystem);
 
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
@@ -172,6 +173,7 @@ export class StarTwit {
         //this.statusText = new PIXI.Text("Loading...", { fontFamily: 'Courier', fontSize: 14, fill: 0xffffff, align: 'center' });
         this.splash_screen.addChild(this.statusText);
         this.statusText.position = new Point(320 - this.statusText.width / 2, 300);
+        this.timerScore.addToStage(this.splash_screen);
     }
 
     private exitMenu(toLevel: number) {
@@ -181,7 +183,7 @@ export class StarTwit {
     }
 
     private onMenuClick() {
-        this.exitMenu(5);
+        this.exitMenu(0);
     }
 
     private onGameOver() {

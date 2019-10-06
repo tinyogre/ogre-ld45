@@ -34,6 +34,16 @@ export class TimeScoreSystem extends System {
         this.engine.events.addListener(GameEvent.GAME_OVER, this.onGameOver.bind(this));
     }
 
+    addToStage(stage: PIXI.Container) {
+        if (this.levelTimeText) {
+            stage.addChild(this.levelTimeText);
+        }
+
+        if (this.totalTimeText) {
+            stage.addChild(this.totalTimeText);
+        }
+    }
+
     onStartLevel() {
         this.levelElapsed = 0;
     }
@@ -41,6 +51,9 @@ export class TimeScoreSystem extends System {
     onStartGame() {
         this.timing = true;
         this.totalElapsed = 0;
+
+        this.engine.uiStage.addChild(this.levelTimeText);
+        this.engine.uiStage.addChild(this.totalTimeText);
     }
     onGameOver() {
         this.timing = false;
