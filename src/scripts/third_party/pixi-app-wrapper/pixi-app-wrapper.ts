@@ -86,7 +86,7 @@ export class PixiAppWrapper extends EventEmitter {
         this.mediaInfoViewer = new MediaInfoViewer();
 
         this.app = new PIXI.Application(options);
-        document.body.appendChild(this.app.view);
+        //document.body.appendChild(this.app.view);
 
         this.configure(options);
         this.ticker.add(this.resize.bind(this));
@@ -235,6 +235,11 @@ export class PixiAppWrapper extends EventEmitter {
         const width = Math.floor(this.view.clientWidth * multiplier);
         const height = Math.floor(this.view.clientHeight * multiplier);
 
+        // if (this.view.clientWidth < 1280) {
+        //     this.view.clientWidth = 640;
+        // } else {
+        //     this.view.clientWidth = 1280;
+        // }
         if (!this.resizing && (this.view.width !== width || this.view.height !== height)) {
             this.resizing = true;
 

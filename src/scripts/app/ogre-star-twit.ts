@@ -3,6 +3,7 @@ import {
     PixiAppWrapper,
     pixiAppWrapperEvent as WrapperEvent,
     PixiAppWrapperOptions as WrapperOpts,
+    Dom,
 } from "../third_party/pixi-app-wrapper";
 import { PixiAssetsLoader, Asset, AssetPriority, SoundAsset, LoadAsset } from "../third_party/pixi-assets-loader";
 import { SCALE_MODES, Point, Rectangle, Sprite, Container } from "pixi.js";
@@ -77,6 +78,8 @@ export class StarTwit {
     static CANVAS_SIZE: Point = new Point(640, 480);
 
     constructor() {
+        const canvas = Dom.getElementOrCreateNew<HTMLCanvasElement>("app-canvas", "canvas", document.getElementById("app-root"));
+
         PIXI.settings.SCALE_MODE = SCALE_MODES.NEAREST;
         PIXI.settings.TARGET_FPMS = 60 / 1000;
         
@@ -86,7 +89,7 @@ export class StarTwit {
         }
         PIXI.utils.sayHello(type);
 
-        this.app = new PixiAppWrapper({width: StarTwit.CANVAS_SIZE.x, height: StarTwit.CANVAS_SIZE.y, resolution: 2});
+        this.app = new PixiAppWrapper({width: StarTwit.CANVAS_SIZE.x, height: StarTwit.CANVAS_SIZE.y, resolution: 2, view: canvas});
         this.app.renderer.backgroundColor = 0x000040;
         this.loader = new PixiAssetsLoader();
         this.loader.on(PixiAssetsLoader.PRIORITY_GROUP_LOADED, this.onAssetsLoaded.bind(this));
