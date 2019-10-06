@@ -254,7 +254,7 @@ export class PhysicsSystem extends System {
     }
 
     createStatic(r: PIXI.Rectangle, bodyType?: b2BodyType): Entity {
-        if (!bodyType) {
+        if (bodyType === undefined) {
             bodyType = b2BodyType.b2_staticBody;
         }
         let e = this.engine.entityManager.createEntity("static");
@@ -267,7 +267,7 @@ export class PhysicsSystem extends System {
     }
 
     addBox(e: Entity, rect: PIXI.Rectangle, bodyType?: b2BodyType) {
-        if (!bodyType) {
+        if (bodyType === undefined) {
             bodyType = b2BodyType.b2_dynamicBody;
         }
         let pc = e.getOrAdd(PhysicsComponent);
@@ -276,7 +276,7 @@ export class PhysicsSystem extends System {
     }
     
     addCircle(e: Entity, radius: number, bodyType?: b2BodyType): PhysicsComponent {
-        if (!bodyType) {
+        if (bodyType === undefined) {
             bodyType = b2BodyType.b2_dynamicBody;
         }
         let physicsRadius = this.scaleDistance(radius);

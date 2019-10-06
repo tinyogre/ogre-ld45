@@ -25,12 +25,13 @@ export class LevelSystem extends System {
     physics: PhysicsSystem;
     playerStart: Point;
     currentLevelIndex: number = -1;
-    loadNextLevel: number = 0;
+    loadNextLevel: number = 4;
     levels: Level[] = [
         Levels.level1,
         Levels.level2,
         Levels.level3,
         Levels.level4,
+        Levels.level5,
     ];
     particles: ParticleSystem;
     pickups: PickupSystem;
@@ -113,6 +114,10 @@ export class LevelSystem extends System {
                     e = this.createHorizontalBeam(worldX, worldY, len);
                 } else if (c == "H") {
                     e = this.pickups.newPickup("hook", worldX, worldY, new Rectangle(8, 12, 16, 20), b2BodyType.b2_dynamicBody, "powerup04_s");
+                } else if (c == "<") {
+                    e = this.pickups.newPickup("button_unpressed", worldX, worldY, new Rectangle(17, 0, 15, 32), b2BodyType.b2_staticBody, "button01_s");
+                } else if (c == "=") {
+                    e = this.createTunnel(worldX, worldY);
                 }
 
 
@@ -173,6 +178,17 @@ export class LevelSystem extends System {
         return e;
     }
 
+    private createTunnel(x: number, y: number) {
+        let e = this.physics.createStatic(new PIXI.Rectangle(x, y, Config.tileSize, 4));
+        let s = e.add(SpriteComponent);
+        s.Load("narrowhorizontaltunnel");
+        s.sprite.pivot = new Point(0,0);
+
+        // Second entity for bottom half of tunnel physics only
+        let e2 = this.physics.createStatic(new PIXI.Rectangle(x, y + Config.tileSize - 4, Config.tileSize, 4));
+        e2.add(LevelObjectComponent);
+        return e;
+    }
     advance() {
         // Doesn't advance immediately, waits for update.
         this.loadNextLevel = this.currentLevelIndex + 1;

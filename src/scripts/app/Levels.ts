@@ -60,10 +60,10 @@ export class Levels {
             "W.........................W",
             "W.........S......O........W",
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
-        ],              
-        messages: {     
+        ],
+        messages: {
             "1": "The name's Nothing. Hubert Nothing.\nNice to meet you.",
-            "S": "I got my controls back this time, now I can turn...",    
+            "S": "I got my controls back this time, now I can turn...",
         },
         events: []
     };
@@ -79,15 +79,15 @@ export class Levels {
             "W..........W.......W......W",
             "W..........W.......W......W",
             "W..........W.......W......W",
-            "W..........W.......W......W",                                
+            "W..........W.......W......W",
             "W..........W....O..W......W",
             "W..........WWWWWWWWW......W",
-            "W.........................W",                                                  
+            "W.........................W",
             "W.........................W",
             "W.........................W",
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
-        ],              
-        messages: {     
+        ],
+        messages: {
             "G": "A Turret!  Now we're talking!",
         },
         events: [
@@ -97,23 +97,48 @@ export class Levels {
     static level4: Level = {
         map: [
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
-            "W.........................W",                            
             "W.........................W",
             "W.........................W",
             "W.........................W",
-            "W.S.......................W",                            
-            "W.P.......................W",                            
-            "W.T.......................W",                            
-            "W.........................W",                            
-            "W.1...H...................W",                            
-            "WWWWWWWWWW.----.WWWWWWWWWWW",                            
-            "W........WWW..WWW.........W",                            
-            "W.........................W",                            
+            "W.........................W",
+            "W.S.......................W",
+            "W.P.......................W",
+            "W.T.......................W",
+            "W.........................W",
+            "W.1...H...................W",
+            "WWWWWWWWWW.----.WWWWWWWWWWW",
+            "W........WWW..WWW.........W",
+            "W.........................W",
             "W............O............W",
             "W.........................W",
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
-        ],              
-        messages: {     
+        ],
+        messages: {
+            "1": "I think that's a tow hook!"
+        },
+        events: [
+        ]
+    };
+    static level5: Level = {
+        map: [
+            "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
+            "W........!................W",
+            "W..P.<...!................W",
+            "W..S.<...!................W",
+            "W..T.<...WWWW.............W",
+            "W..G.<...===.<............W",
+            "WWWWWWWWWWWWW.............W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",
+            "W.........................W",         
+            "W.........................W",
+            "W.........................W",
+            "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
+        ],
+        messages: {
             "1": "I think that's a tow hook!"
         },
         events: [

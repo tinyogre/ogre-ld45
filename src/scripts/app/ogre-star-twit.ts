@@ -68,6 +68,10 @@ export class StarTwit {
         "bouncyball",
         "physicstile",
         "hook",
+        "narrowhorizontaltunnel",
+        "button_unpressed",
+        "button_pressed",
+        "explodingcrate",
     ]
     
     engine: Engine;
