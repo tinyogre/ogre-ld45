@@ -200,12 +200,12 @@ export class PlayerSystem extends System {
 
     addSteering() {
         this.playerComponent.canSteer = true;
-        this.messages.addMessage(new Point(320, 450), this.engine.uiStage, "A or Left: Turn Left\nD or Right: Turn Right", 9000, 0x8888ff);
+        this.messages.addMessage(new Point(320, 450), this.engine.uiStage, "A or Left: Turn Left\nD or Right: Turn Right", 9000, Config.helpColor);
     }
 
     addThrust() {
         this.playerComponent.canThrust = true;
-        this.messages.addMessage(new Point(320, 470), this.engine.uiStage, "W or Up: Thrust", 9000, 0x8888ff);
+        this.messages.addMessage(new Point(320, 470), this.engine.uiStage, "W or Up: Thrust", 9000, Config.helpColor);
     }
 
     addTurret(sprite: PIXI.Sprite) {
@@ -213,7 +213,7 @@ export class PlayerSystem extends System {
         this.playerComponent.turretSprite = sprite;
         this.playerComponent.turretSprite.pivot = new Point(16, 16);
         this.playerComponent.turretSprite.position = new Point(16, 16);
-        this.messages.addMessage(new Point(320, 420), this.engine.uiStage, "Q: Aim Left\nE: Aim Right\nSpace: Shoot", 9000, 0x8888ff);
+        this.messages.addMessage(new Point(320, 420), this.engine.uiStage, "Q: Aim Left\nE: Aim Right\nSpace: Shoot", 9000, Config.helpColor);
     }
 
     addTowHook(sprite: PIXI.Sprite) {
@@ -222,7 +222,7 @@ export class PlayerSystem extends System {
         this.playerComponent.towHookSprite.pivot = new Point(16, 16);
         this.playerComponent.towHookSprite.position = new Point(16, 16);
         this.playerComponent.towHookSprite.zIndex = -500;
-        this.messages.addMessage(new Point(320, 390), this.engine.uiStage, "X: Deploy Hook", 9000, 0x8888ff);
+        this.messages.addMessage(new Point(320, 390), this.engine.uiStage, "X: Deploy Hook", 9000, Config.helpColor);
     }
 
     toggleHook() {

@@ -10,7 +10,7 @@ import { Entity } from "../engine/entity";
 import { LevelObjectComponent } from "./LevelObjectComponent";
 import { GameEvent } from "./GameEvent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
-import { ParticleDef } from "../engine/components/ParticleComponent";
+import { ParticleDef, ParticleEmitterDef } from "../engine/components/ParticleComponent";
 import { PickupComponent } from "../engine/components/PickupComponent";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { Engine } from "../engine/Engine";
@@ -82,7 +82,7 @@ export class LevelSystem extends System {
         this.physics = this.engine.get(PhysicsSystem);
         this.pickups = this.engine.get(PickupSystem);
         this.engine.gameStage.addChild(this.levelContainer);
-        this.wallTexture = PIXI.BaseTexture.from("3x3bluewalls");
+        this.wallTexture = PIXI.BaseTexture.from("walltile");
         this.physicsObjectTexture = PIXI.Texture.from("physicstile");
         this.particles = this.engine.get(ParticleSystem);
     }
@@ -184,10 +184,10 @@ export class LevelSystem extends System {
     }
 
     private createGround(x: number, y: number): Entity {
-        let t = new PIXI.Texture(this.wallTexture, new Rectangle(64,0,Config.tileSize,Config.tileSize));
+        let t = new PIXI.Texture(this.wallTexture, new Rectangle(0,0,Config.tileSize,Config.tileSize));
         let e = this.physics.createStatic(new PIXI.Rectangle(x, y, Config.tileSize, Config.tileSize));
         let s = e.add(SpriteComponent);
-        s.LoadFrame(this.wallTexture, new Rectangle(64, 0, Config.tileSize, Config.tileSize));
+        s.LoadFrame(this.wallTexture, new Rectangle(0, 0, Config.tileSize, Config.tileSize));
         s.sprite.pivot = new Point(0, 0);
         return e;
     }
@@ -246,6 +246,19 @@ export class LevelSystem extends System {
         }
     }
 
+    static explosionDef: ParticleEmitterDef = {
+        sprite: "explosionparticle",
+        permanent: false,
+        rotation: 1,
+        arc: 2 * Math.PI,
+        particleDuration: 1,
+        emitterDuration: 5,
+        spawnPerSecond: 20,
+        velocity: 20,
+        gravityCoefficient: 10,
+        spawnRadius: 30,
+    };
+
     doExplosion(p: Point) {
         for (let i = 0; i < 5; i++) {
             let e = this.engine.entityManager.createEntity("explosion");
@@ -258,6 +271,8 @@ export class LevelSystem extends System {
             mover.rotateSpeed = Math.random() * Math.PI / 2 - (Math.PI / 4);
             mover.scaleSpeed = Math.random() - 0.5;
             this.engine.get(SoundSystem).playFromList(SoundSystem.collisionSounds);
+
+            this.engine.get(ParticleSystem).addParticleEmitter(e, LevelSystem.explosionDef);
         }
     }
 

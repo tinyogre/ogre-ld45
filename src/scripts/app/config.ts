@@ -12,4 +12,5 @@ export class Config {
     static shotDelay = 0.5;
     static recoil = 3000;
     static shotDuration = 30;
+    static helpColor = 0xddddff;
 }

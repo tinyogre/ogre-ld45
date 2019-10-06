@@ -6,6 +6,7 @@ import { Point } from "pixi.js";
 import { Transform } from "../components/Transform";
 import { PhysicsComponent } from "../components/PhysicsComponent";
 import { MathUtil } from "../MathUtil";
+import { XY } from "@flyover/box2d";
 
 export class ParticleSystem extends System {
     static sname = "particle";
@@ -91,8 +92,13 @@ export class ParticleSystem extends System {
 
     addParticle(e: ParticleEmitter, comp: ParticleComponent) {
         let t = comp.entity.get(Transform);
+        let physicsVelocity: XY;
         let physics = comp.entity.get(PhysicsComponent);
-        let physicsVelocity = physics.body.GetLinearVelocity();
+        if (physics) {
+            physicsVelocity = physics.body.GetLinearVelocity();
+        } else {
+            physicsVelocity = {x: 0, y: 0};
+        }
         
         let direction = Math.random() * (e.def.arc || 2 * Math.PI) + (e.def.rotation || 0) + t.rotation;
         let particle = new Particle();

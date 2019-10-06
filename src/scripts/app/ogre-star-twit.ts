@@ -80,6 +80,8 @@ export class StarTwit {
         "button_pressed",
         "explodingcrate",
         "explosion",
+        "walltile",
+        "explosionparticle",
     ]
     
     engine: Engine;
@@ -88,7 +90,7 @@ export class StarTwit {
     soundSystem: SoundSystem;
     keyboard: KeyboardSystem;
     inGame: boolean = false;
-    enableLevelCheat = false;
+    enableLevelCheat = true;
     timerScore: TimeScoreSystem;
 
     static CANVAS_SIZE: Point = new Point(640, 480);
