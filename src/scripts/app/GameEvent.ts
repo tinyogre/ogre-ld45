@@ -8,4 +8,5 @@ export class GameEvent {
     static FIRED_SHOT = "FIRED_SHOT";
     static GAME_OVER = "GAME_OVER";
     static GAME_WON = "GAME_WON";
+    static START_GAME = "START_GAME";
 }

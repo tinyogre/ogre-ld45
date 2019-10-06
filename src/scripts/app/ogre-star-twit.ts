@@ -25,6 +25,7 @@ import { TtlSystem } from "./TtlSystem";
 import { GameEvent } from "./GameEvent";
 import { SoundSystem } from "./SoundSystem";
 import { MoverSystem } from "./MoverSystem";
+import { TimeScoreSystem } from "./TimeScoreSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -131,6 +132,7 @@ export class StarTwit {
         this.engine.add(MessageSystem);
         this.engine.add(TtlSystem);
         this.engine.add(MoverSystem);
+        this.engine.add(TimeScoreSystem);
         this.soundSystem = this.engine.add(SoundSystem);
 
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
@@ -149,6 +151,7 @@ export class StarTwit {
         }
         this.engine.get(LevelSystem).currentLevelIndex = -1;
         this.engine.get(LevelSystem).loadNextLevel = level;
+        this.engine.events.emit(GameEvent.START_GAME);
     }
 
     private createGround(physics: PhysicsSystem, x: number, y: number) {
