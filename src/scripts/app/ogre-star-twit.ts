@@ -90,7 +90,7 @@ export class StarTwit {
     soundSystem: SoundSystem;
     keyboard: KeyboardSystem;
     inGame: boolean = false;
-    enableLevelCheat = true;
+    enableLevelCheat = false;
     timerScore: TimeScoreSystem;
 
     static CANVAS_SIZE: Point = new Point(640, 480);
