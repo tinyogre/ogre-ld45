@@ -6,4 +6,5 @@ export class PickupComponent extends Component {
     onPickup: (p: PickupComponent) => void;
     message?: string;
     sound: string;
+    isFixture: boolean;
 }

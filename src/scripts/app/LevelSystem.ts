@@ -1,7 +1,7 @@
 import { System } from "../engine/System";
 import { PhysicsSystem } from "../engine/systems/PhysicsSystem";
 import { SpriteComponent } from "../engine/components/SpriteComponent";
-import { Point, Texture, Rectangle } from "pixi.js";
+import { Point, Texture, Rectangle, Sprite } from "pixi.js";
 import { Config } from "./config";
 import { PickupSystem } from "./PickupSystem";
 import { b2BodyType } from "@flyover/box2d";
@@ -15,6 +15,11 @@ import { PickupComponent } from "../engine/components/PickupComponent";
 import { PhysicsComponent } from "../engine/components/PhysicsComponent";
 import { Engine } from "../engine/Engine";
 import { MessageSystem } from "./MessageSystem";
+import { Transform } from "../engine/components/Transform";
+import { FixtureComponent } from "./FixtureComponent";
+import { TtlSystem } from "./TtlSystem";
+import { MoverComponent } from "./MoverComponent";
+import { SoundSystem } from "./SoundSystem";
 
 export class LevelSystem extends System {
     static sname = "levelsystem";
@@ -115,9 +120,11 @@ export class LevelSystem extends System {
                 } else if (c == "H") {
                     e = this.pickups.newPickup("hook", worldX, worldY, new Rectangle(8, 12, 16, 20), b2BodyType.b2_dynamicBody, "powerup04_s");
                 } else if (c == "<") {
-                    e = this.pickups.newPickup("button_unpressed", worldX, worldY, new Rectangle(17, 0, 15, 32), b2BodyType.b2_staticBody, "button01_s");
+                    e = this.createFixture("button_unpressed", worldX, worldY, new Rectangle(17, 0, 15, 32), "button01_s");
                 } else if (c == "=") {
                     e = this.createTunnel(worldX, worldY);
+                } else if (c == "!") {
+                    e = this.createFixture("explodingcrate", worldX, worldY, new Rectangle(0,0,32,32), "explosion01_s");
                 }
 
 
@@ -189,6 +196,61 @@ export class LevelSystem extends System {
         e2.add(LevelObjectComponent);
         return e;
     }
+
+    private createFixture(what: string, worldX: number, worldY: number, collisionRect: Rectangle, sound: string): Entity | null {
+        let e: Entity = this.engine.entityManager.createEntity(what);
+        let t = e.add(Transform);
+        let s = e.add(SpriteComponent);
+        s.Load(what);
+
+        let pickup = e.add(PickupComponent);
+        pickup.what = what;
+        pickup.sound = sound;
+        pickup.isFixture = true;
+
+        t.pos.set(worldX, worldY);
+        let physics = e.getOrAdd(PhysicsComponent);
+        physics.contactListener = this.onFixtureContact.bind(this);
+        s.sprite.pivot = new Point(0, 0);
+        this.physics.addBox(e, collisionRect, b2BodyType.b2_staticBody);
+
+        e.add(FixtureComponent).what = what;
+        return e;
+    }
+
+    onFixtureContact(self: PhysicsComponent, other: PhysicsComponent) {
+        console.log("Fixture touched by " + other.entity.debugName);
+        if (self.entity.debugName == "button_unpressed") {
+            this.explodeThings();
+        }
+    }
+
+    explodeThings() {
+        let crates = this.engine.entityManager.getAll(FixtureComponent);
+        for (let e of crates) {
+            if (e.get(FixtureComponent).what == "explodingcrate") {
+                this.engine.entityManager.deleteEntity(e);
+                this.doExplosion(e.get(Transform).pos);
+            }
+        }
+    }
+
+    static explosionSounds = ["explosion01_s", "explosion02_s", "explosion03_s"];
+    doExplosion(p: Point) {
+        for (let i = 0; i < 5; i++) {
+            let e = this.engine.entityManager.createEntity("explosion");
+            let t = e.add(Transform);
+            let s = e.add(SpriteComponent);
+            t.pos = p;
+            s.Load("explosion");
+            this.engine.get(TtlSystem).setTtl(e, 1);
+            let mover = e.add(MoverComponent);
+            mover.rotateSpeed = Math.random() * Math.PI / 2 - (Math.PI / 4);
+            mover.scaleSpeed = Math.random() - 0.5;
+            this.engine.get(SoundSystem).play(LevelSystem.explosionSounds[Math.floor(Math.random() * 3)]);
+        }
+    }
+
     advance() {
         // Doesn't advance immediately, waits for update.
         this.loadNextLevel = this.currentLevelIndex + 1;

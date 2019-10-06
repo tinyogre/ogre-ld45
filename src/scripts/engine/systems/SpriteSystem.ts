@@ -18,6 +18,7 @@ export class SpriteSystem extends System {
                 let t = e.get(Transform);
                 s.sprite.position = new Point(t.pos.x, t.pos.y);
                 s.sprite.rotation = t.rotation;
+                s.sprite.scale = new Point(t.scale, t.scale);
             }
         })
     }

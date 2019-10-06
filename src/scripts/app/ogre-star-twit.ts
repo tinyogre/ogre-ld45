@@ -24,6 +24,7 @@ import { MessageSystem } from "./MessageSystem";
 import { TtlSystem } from "./TtlSystem";
 import { GameEvent } from "./GameEvent";
 import { SoundSystem } from "./SoundSystem";
+import { MoverSystem } from "./MoverSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -41,6 +42,11 @@ export class StarTwit {
 
     soundAssets: string[] = [
         "collision01_s",
+        "collision02_s",
+        "collision03_s",
+        "explosion01_s",
+        "explosion02_s",
+        "explosion03_s",
         "message01_s",
         "message02_s",
         "message03_s",
@@ -72,6 +78,7 @@ export class StarTwit {
         "button_unpressed",
         "button_pressed",
         "explodingcrate",
+        "explosion",
     ]
     
     engine: Engine;
@@ -120,6 +127,7 @@ export class StarTwit {
         this.engine.add(ParticleSystem);
         this.engine.add(MessageSystem);
         this.engine.add(TtlSystem);
+        this.engine.add(MoverSystem);
         this.soundSystem = this.engine.add(SoundSystem);
 
         let debugRenderSystem = this.engine.add(DebugRenderSystem);

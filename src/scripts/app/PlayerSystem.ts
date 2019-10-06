@@ -248,7 +248,7 @@ export class PlayerSystem extends System {
         );
         let distanceFromShip = 8;
         p = new Point(p.x + directionVector.x * distanceFromShip, p.y + directionVector.y * distanceFromShip);
-        let shot = this.engine.entityManager.createEntity();
+        let shot = this.engine.entityManager.createEntity("bouncyball");
         let t = shot.getOrAdd(Transform);
         t.pos = p;
         let pc = this.physics.addCircle(shot, 7);

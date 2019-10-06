@@ -36,6 +36,7 @@ export class AppContactListener {
         this.sounds = sounds;
     }
 
+    static collisionSounds = ["collision01_s", "collision02_s", "collision03_s"];
     /// Called when two fixtures begin to touch.
     public BeginContact(contact: b2Contact): void { 
         let fixtureA = contact.m_fixtureA;
@@ -44,7 +45,7 @@ export class AppContactListener {
         let b = fixtureB.GetBody().m_userData as PhysicsComponent;
 
         if (!fixtureA.IsSensor() && !fixtureB.IsSensor()) {
-            this.sounds.play("collision01_s");
+            this.sounds.play(AppContactListener.collisionSounds[Math.floor(Math.random() * 3)]);
         }
 
         let manifold = new b2WorldManifold();
