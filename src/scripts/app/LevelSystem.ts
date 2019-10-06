@@ -30,13 +30,14 @@ export class LevelSystem extends System {
     physics: PhysicsSystem;
     playerStart: Point;
     currentLevelIndex: number = -1;
-    loadNextLevel: number = 4;
+    loadNextLevel: number = 5;
     levels: Level[] = [
         Levels.level1,
         Levels.level2,
         Levels.level3,
         Levels.level4,
         Levels.level5,
+        Levels.level6,
     ];
     particles: ParticleSystem;
     pickups: PickupSystem;
@@ -125,6 +126,8 @@ export class LevelSystem extends System {
                     e = this.createTunnel(worldX, worldY);
                 } else if (c == "!") {
                     e = this.createFixture("explodingcrate", worldX, worldY, new Rectangle(0,0,32,32), "explosion01_s");
+                } else if (c == "o") {
+                    e = this.createBall("bouncyball", worldX, worldY);
                 }
 
 
@@ -164,6 +167,7 @@ export class LevelSystem extends System {
 
     createHorizontalBeam(x: number, y: number, count: number): Entity {
         let e = this.physics.createStatic(new PIXI.Rectangle(x, y, count * Config.tileSize, Config.tileSize), b2BodyType.b2_dynamicBody);
+        e.get(PhysicsComponent).silent = true;
         let s = e.add(SpriteComponent);
         s.Load("this is not a real asset");
         let t = this.physicsObjectTexture;
@@ -253,6 +257,22 @@ export class LevelSystem extends System {
             mover.scaleSpeed = Math.random() - 0.5;
             this.engine.get(SoundSystem).playFromList(SoundSystem.collisionSounds);
         }
+    }
+
+    createBall(what: string, x: number, y: number) : Entity {
+        let shot = this.engine.entityManager.createEntity("levelball");
+        let t = shot.getOrAdd(Transform);
+        t.pos = new Point(x, y);
+        let pc = this.physics.addCircle(shot, 7);
+        let sprite = shot.getOrAdd(SpriteComponent);
+        sprite.Load(what);
+        sprite.sprite.pivot = new Point(8, 8);
+        let fixture = pc.body.GetFixtureList()!;
+        fixture.m_friction = 0.25;
+        fixture.m_restitution = 0.9;
+        pc.fixedVisualRotation = true;
+        pc.silent = true;
+        return shot;
     }
 
     advance() {

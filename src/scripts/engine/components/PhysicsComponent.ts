@@ -8,6 +8,9 @@ export class PhysicsComponent extends Component {
     shape: PIXI.Point[];
     contactListener?: (self: PhysicsComponent, other: PhysicsComponent) => void;
     fixedVisualRotation: boolean = false;
+    
+    // Hack for that level with a few hundred physics objects.
+    silent: boolean;
 
     onDelete() {
         if (this.body) {

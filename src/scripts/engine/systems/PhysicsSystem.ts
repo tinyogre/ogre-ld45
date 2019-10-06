@@ -43,8 +43,10 @@ export class AppContactListener {
         let a = fixtureA.GetBody().m_userData as PhysicsComponent;
         let b = fixtureB.GetBody().m_userData as PhysicsComponent;
 
-        if (!fixtureA.IsSensor() && !fixtureB.IsSensor()) {
-            this.sounds.playFromList(SoundSystem.collisionSounds);
+        if (!a.silent && !b.silent) {
+            if (!fixtureA.IsSensor() && !fixtureB.IsSensor()) {
+                this.sounds.playFromList(SoundSystem.collisionSounds);
+            }
         }
 
         let manifold = new b2WorldManifold();
