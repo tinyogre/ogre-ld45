@@ -101,7 +101,7 @@ export class LevelSystem extends System {
                 } else if (c === "T") {
                     e = this.pickups.newPickup("engine", worldX, worldY, new Rectangle(8, 25, 16, 7), b2BodyType.b2_dynamicBody, "powerup02_s");
                 } else if (c === "O") {
-                    e = this.pickups.newCirclePickup("wormhole", worldX, worldY, 32, b2BodyType.b2_kinematicBody, "wormhole01_s");
+                    e = this.pickups.newCirclePickup("wormhole", worldX, worldY, 32, b2BodyType.b2_kinematicBody, SoundSystem.randomSound(SoundSystem.wormholeSounds));
                     this.particles.addParticleEmitter(e, ParticleDef.WORMHOLE);
                     e.get(PhysicsComponent).body.GetFixtureList()!.m_isSensor = true;
                 } else if (c === "G") {
@@ -211,8 +211,8 @@ export class LevelSystem extends System {
         t.pos.set(worldX, worldY);
         let physics = e.getOrAdd(PhysicsComponent);
         physics.contactListener = this.onFixtureContact.bind(this);
-        s.sprite.pivot = new Point(0, 0);
-        this.physics.addBox(e, collisionRect, b2BodyType.b2_staticBody);
+        s.sprite.pivot = new Point(collisionRect.x, 0);
+        this.physics.addBox(e, new Rectangle(0, 0, collisionRect.width, collisionRect.height), b2BodyType.b2_staticBody);
 
         e.add(FixtureComponent).what = what;
         return e;
@@ -220,8 +220,13 @@ export class LevelSystem extends System {
 
     onFixtureContact(self: PhysicsComponent, other: PhysicsComponent) {
         console.log("Fixture touched by " + other.entity.debugName);
-        if (self.entity.debugName == "button_unpressed") {
+        let fixture = self.entity.get(FixtureComponent);
+        if (fixture && fixture.what === "button_unpressed") {
             this.explodeThings();
+            let s = self.entity.get(SpriteComponent);
+            s.sprite.destroy();
+            s.Load("button_pressed");
+            fixture.what = "button_pressed";
         }
     }
 
@@ -235,7 +240,6 @@ export class LevelSystem extends System {
         }
     }
 
-    static explosionSounds = ["explosion01_s", "explosion02_s", "explosion03_s"];
     doExplosion(p: Point) {
         for (let i = 0; i < 5; i++) {
             let e = this.engine.entityManager.createEntity("explosion");
@@ -247,7 +251,7 @@ export class LevelSystem extends System {
             let mover = e.add(MoverComponent);
             mover.rotateSpeed = Math.random() * Math.PI / 2 - (Math.PI / 4);
             mover.scaleSpeed = Math.random() - 0.5;
-            this.engine.get(SoundSystem).play(LevelSystem.explosionSounds[Math.floor(Math.random() * 3)]);
+            this.engine.get(SoundSystem).playFromList(SoundSystem.collisionSounds);
         }
     }
 

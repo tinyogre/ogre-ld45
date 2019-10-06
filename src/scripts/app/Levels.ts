@@ -121,14 +121,14 @@ export class Levels {
     };
     static level5: Level = {
         map: [
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
-            "W........!................W",
-            "W..P.....!................W",
-            "W..S.....!!!!!.....O......W",
-            "W..T.....WWWW!............W",
-            "W..G.....===.<............W",
-            "WWWWWWWWWWWWW.............W",
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
+            "WWWWWWWWWWWWWWWWWWWWWWWWW",
+            "W......!................W",
+            "W..P...!................W",
+            "W..S...!!!!!.....O......W",
+            "W..T...WWWW!W...........W",           
+            "W..G...===.<W...........W",           
+            "WWWWWWWWWWWWW...........W",
+            "WWWWWWWWWWWWWWWWWWWWWWWWW",
         ],
         messages: {
             "1": "I think that's a tow hook!"
