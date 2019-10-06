@@ -10,7 +10,7 @@ import { KeyboardSystem } from "../engine/systems/KeyboardSystem";
 import { Config } from "./config";
 import {StandardGamepad, StandardGamepadMapping, StandardGamepadButton} from "../third_party/standard-gamepad";
 import { StarTwit } from "./ogre-star-twit";
-import { XY, b2Vec2 } from "@flyover/box2d";
+import { XY, b2Vec2, b2Joint } from "@flyover/box2d";
 import { PlayerComponent } from "./PlayerComponent";
 import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { ParticleEmitterDef } from "../engine/components/ParticleComponent";
@@ -39,6 +39,7 @@ export class PlayerSystem extends System {
         this.engine.events.addListener(GameEvent.ADD_STEERING, this.addSteering.bind(this));
         this.engine.events.addListener(GameEvent.ADD_THRUST, this.addThrust.bind(this));
         this.engine.events.addListener(GameEvent.ADD_TURRET, this.addTurret.bind(this));
+        this.engine.events.addListener(GameEvent.ADD_TOW_HOOK, this.addTowHook.bind(this));
 
         this.keyboard.addKeyDown(this.keyDown.bind(this));
 
@@ -92,6 +93,8 @@ export class PlayerSystem extends System {
         this.physics.addShape(this.player, shape);
         sprite.Load('ship');
         sprite.sprite.pivot = new Point(16, 16);
+        sprite.sprite.zIndex = -1;
+        sprite.sprite.sortableChildren = true;
     }
 
     keyDown(key: number) {
@@ -106,6 +109,12 @@ export class PlayerSystem extends System {
         if (key == 27) {
             this.engine.togglePause();
         }
+
+        if (this.playerComponent.canTowHook) {
+            if (key == "X".charCodeAt(0)) {
+                this.toggleHook();
+            }
+        }
     }
     static rotate(v: b2Vec2, r: number): b2Vec2 {
         let out = new b2Vec2;
@@ -115,6 +124,14 @@ export class PlayerSystem extends System {
     update(deltaTime: number): void {
         if (!this.player) {
             return;
+        }
+
+        if (this.playerComponent.doAttachPhysicsObject) {
+            if (this.playerComponent.activeJoint) {
+                this.physics.detach(this.playerComponent.activeJoint);
+            }
+            this.playerComponent.activeJoint = this.physics.attach(this.player, this.playerComponent.doAttachPhysicsObject);
+            this.playerComponent.doAttachPhysicsObject = null as unknown as Entity;
         }
 
         let rotate: number = 0;
@@ -163,6 +180,7 @@ export class PlayerSystem extends System {
                 }
             }
         }
+
         if (rotate !== 0) {
           pc.body.ApplyTorque(rotate * 1000);
         }
@@ -185,6 +203,37 @@ export class PlayerSystem extends System {
         this.playerComponent.turretSprite.pivot = new Point(16, 16);
         this.playerComponent.turretSprite.position = new Point(16, 16);
         this.messages.addMessage(new Point(320, 420), this.engine.uiStage, "Q: Aim Left\nE: Aim Right\nSpace: Shoot", 9000, 0x8888ff);
+    }
+
+    addTowHook(sprite: PIXI.Sprite) {
+        this.playerComponent.canTowHook = true;
+        this.playerComponent.towHookSprite = sprite;
+        this.playerComponent.towHookSprite.pivot = new Point(16, 16);
+        this.playerComponent.towHookSprite.position = new Point(16, 16);
+        this.playerComponent.towHookSprite.zIndex = -500;
+        this.messages.addMessage(new Point(320, 410), this.engine.uiStage, "X: Deploy Hook", 9000, 0x8888ff);
+    }
+
+    toggleHook() {
+        if (this.playerComponent.towHookDeployed) {
+            if (this.playerComponent.activeJoint) {
+                this.physics.detach(this.playerComponent.activeJoint);
+                this.playerComponent.activeJoint = null as unknown as b2Joint;
+            }
+            this.playerComponent.towHookSprite.position = new Point(16, 16);
+            this.playerComponent.towHookDeployed = false;
+        } else {
+            this.playerComponent.towHookSprite.position = new Point(16, 32);
+            this.playerComponent.towHookDeployed = true;
+            this.playerComponent.hookSensor = this.physics.addSensor(this.player!, new Rectangle(-8, 16, 16, 16), this.onHookContact.bind(this));
+        }
+    }
+
+    onHookContact(other: Entity) {
+        console.log("onHookContact");
+        if (this.playerComponent.towHookDeployed && !this.playerComponent.activeJoint) {
+            this.playerComponent.doAttachPhysicsObject = other;
+        }
     }
 
     fireShot(p: Point, direction: number) {

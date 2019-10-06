@@ -105,6 +105,8 @@ export class LevelSystem extends System {
                     }
                     let len = x - start + 1;
                     this.createHorizontalBeam(worldX, worldY, len);
+                } else if (c == "H") {
+                    e = this.pickups.newPickup("hook", worldX, worldY, new Rectangle(8, 12, 16, 20));
                 }
 
 

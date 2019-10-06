@@ -49,6 +49,7 @@ export class StarTwit {
         "turret",
         "bouncyball",
         "physicstile",
+        "hook",
     ]
     
     sound: Howl;

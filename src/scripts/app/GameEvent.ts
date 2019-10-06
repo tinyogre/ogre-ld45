@@ -4,5 +4,6 @@ export class GameEvent {
     static ADD_STEERING = "ADD_STEERING";
     static ADD_THRUST = "ADD_THRUST";
     static ADD_TURRET = "ADD_TURRET";
+    static ADD_TOW_HOOK = "ADD_TOW_HOOK";
     static FIRED_SHOT = "FIRED_SHOT";
 }

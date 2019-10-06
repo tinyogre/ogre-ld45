@@ -1,4 +1,4 @@
-import {b2World, b2Vec2, b2Body, b2BodyDef, b2PolygonShape, b2BodyType, XY, b2FixtureDef, b2ContactListener, b2Contact, b2ParticleSystem, b2ParticleBodyContact, b2ParticleContact, b2Manifold, b2ContactImpulse, b2Shape, b2CircleShape} from "@flyover/box2d";
+import {b2World, b2Vec2, b2Body, b2BodyDef, b2PolygonShape, b2BodyType, XY, b2FixtureDef, b2ContactListener, b2Contact, b2ParticleSystem, b2ParticleBodyContact, b2ParticleContact, b2Manifold, b2ContactImpulse, b2Shape, b2CircleShape, b2Fixture, b2JointDef, b2WeldJointDef, b2Joint, b2WorldManifold, b2DistanceJointDef} from "@flyover/box2d";
 import {System} from "../System";
 import { Transform } from "../components/Transform"
 import { EntityManager } from "../EntityManager";
@@ -25,11 +25,31 @@ import { Config } from "../../app/config"
 //     }
 // }
 
+class FixtureObserver {
+    fn: (fixtureA: b2Fixture, a: Entity, fixtureB: b2Fixture, b: Entity) => void;
+}
+
 export class xxxContactListener {
     /// Called when two fixtures begin to touch.
     public BeginContact(contact: b2Contact): void { 
-        let a = contact.m_fixtureA.GetBody().m_userData as PhysicsComponent;
-        let b = contact.m_fixtureB.GetBody().m_userData as PhysicsComponent;
+        let fixtureA = contact.m_fixtureA;
+        let fixtureB = contact.m_fixtureB;
+        let a = fixtureA.GetBody().m_userData as PhysicsComponent;
+        let b = fixtureB.GetBody().m_userData as PhysicsComponent;
+
+        let manifold = new b2WorldManifold();
+        contact.GetWorldManifold(manifold);
+
+        let fixtureAObserver = fixtureA.m_userData as FixtureObserver;
+        if (fixtureAObserver) {
+            fixtureAObserver.fn(fixtureA, a.entity, fixtureB, b.entity);
+        }
+
+        let fixtureBObserver = fixtureB.m_userData as FixtureObserver;
+        if (fixtureBObserver) {
+            fixtureBObserver.fn(fixtureB, b.entity, fixtureA, a.entity);
+        }
+
         //console.log("BeginContact(" + a.entity.debugName + " => " + b.entity.debugName + ")");
         if (a.contactListener) {
             a.contactListener(a, b);
@@ -162,28 +182,31 @@ export class PhysicsSystem extends System {
         return new Rectangle(min.x, min.y, max.x - min.x, max.y - min.y);
     }
 
-    private addPolygonInternal(unscaled: XY[], type: b2BodyType, pc: PhysicsComponent, t: Transform) {
+    private addPolygonInternal(unscaled: XY[], type: b2BodyType, pc: PhysicsComponent, t: Transform): b2Fixture {
         let verts = this.scaleShape(unscaled);
         let poly = new b2PolygonShape();
         poly.Set(verts);
         pc.bounds = this.unscaleRect(this.getBounds(verts)); //this.unscaleRect(new PIXI.Rectangle(0, 0, r.width, r.height));
         pc.shape = this.getPoints(unscaled);
-        this.addShapeInternal(poly, type, pc, t);
+        return this.addShapeInternal(poly, type, pc, t);
     }
 
-    private addShapeInternal(shape: b2Shape, type: b2BodyType, pc: PhysicsComponent, t: Transform) {
-        let def = new b2BodyDef();
-        def.type = type;
-        def.position.Set(0, 0);
-        pc.body = this.world.CreateBody(def);
+    private addShapeInternal(shape: b2Shape, type: b2BodyType, pc: PhysicsComponent, t: Transform): b2Fixture {
+        if (!pc.body) {
+            let def = new b2BodyDef();
+            def.type = type;
+            def.position.Set(0, 0);
+            pc.body = this.world.CreateBody(def);
+            pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);
+            pc.body.m_userData = pc;
+        }
         let fd = new b2FixtureDef();
         fd.shape = shape;
         fd.density = 1.0;
         fd.friction = 5;
         let fixture = pc.body.CreateFixture(fd);
         let tPos = this.scalePoint(t.pos);
-        pc.body.SetTransformXY((t.pos.x + pc.bounds.x) * Config.physicsScale, (t.pos.y + pc.bounds.y) * Config.physicsScale, t.rotation);
-        pc.body.m_userData = pc;
+        return fixture;
     }
 
     getPoints(unscaled: XY[]): Point[] {
@@ -194,7 +217,7 @@ export class PhysicsSystem extends System {
         return p;
     }
 
-    private addBoxInternal(r: PIXI.Rectangle, type: b2BodyType, pc: PhysicsComponent, t: Transform) {
+    private addBoxInternal(r: PIXI.Rectangle, type: b2BodyType, pc: PhysicsComponent, t: Transform): b2Fixture {
         let verts:XY[] = [
             {x: 0, y: 0},
             {x: r.width, y: 0},
@@ -205,7 +228,7 @@ export class PhysicsSystem extends System {
             v.x += r.left;
             v.y += r.top;
         }
-        this.addPolygonInternal(verts, type, pc, t);
+        return this.addPolygonInternal(verts, type, pc, t);
     }
 
     public addShape(e: Entity, shape: XY[], bodyType?: b2BodyType) {
@@ -259,6 +282,37 @@ export class PhysicsSystem extends System {
         return pc;
     }
 
+    addSensor(e: Entity, r: Rectangle, onContact: (entity: Entity) => void): b2Fixture {
+        let pc = e.getOrAdd(PhysicsComponent);
+        let t = e.get(Transform);
+        let fixture = this.addBoxInternal(r, b2BodyType.b2_kinematicBody, pc, t);
+        fixture.m_isSensor = true;
+        fixture.m_density = 0;
+        let fo = new FixtureObserver();
+        fo.fn = (fa: b2Fixture, a: Entity, fb: b2Fixture, b: Entity) => {
+            onContact(b);
+        };
+        fixture.m_userData = fo;
+        return fixture;
+    }
+
+    onFixtureContact(fa: b2Fixture, a: Entity, fb: b2Fixture, b: Entity) {
+        
+    }
+
+    attach(a: Entity, b: Entity): b2Joint {
+        let jointDef = new b2WeldJointDef();
+        let bodyA = a.get(PhysicsComponent).body;
+        let bodyB = b.get(PhysicsComponent).body;
+        let scaledAnchor = this.scalePoint(a.get(Transform).pos);
+        jointDef.Initialize(bodyA, bodyB, new b2Vec2(scaledAnchor.x, scaledAnchor.y));
+        return this.world.CreateJoint(jointDef);
+    }
+
+    detach(joint: b2Joint) {
+        this.world.DestroyJoint(joint);
+    }
+    
     toggleDebug() {
         this.setDebug(!this.debug);
     }

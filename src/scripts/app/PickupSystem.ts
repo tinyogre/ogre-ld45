@@ -48,7 +48,7 @@ export class PickupSystem extends System {
             velocity: 50,
             gravityCoefficient: 0,
         };
-        if (what == "star" || what == "engine" || what == "turret") {
+        if (what == "star" || what == "engine" || what == "turret" || what == "hook") {
             this.particles.addParticleEmitter(e, attractDef);
         }
         return e;
@@ -100,6 +100,8 @@ export class PickupSystem extends System {
             this.engine.events.emit(GameEvent.ADD_THRUST);
         } else if (pickup.what == "turret") {
             this.engine.events.emit(GameEvent.ADD_TURRET, newPlayerSprite);
+        } else if (pickup.what == "hook") {
+            this.engine.events.emit(GameEvent.ADD_TOW_HOOK, newPlayerSprite);
         }
 
         this.engine.entityManager.deleteEntity(self.entity);
