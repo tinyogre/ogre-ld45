@@ -62,7 +62,7 @@ export class Levels {
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
         ],              
         messages: {     
-            //"1": "The name's Nothing. Hubert Nothing.\nNice to meet you.",
+            "1": "The name's Nothing. Hubert Nothing.\nNice to meet you.",
             "S": "I got my controls back this time, now I can turn...",    
         },
         events: []
