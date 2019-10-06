@@ -13,20 +13,23 @@ import { b2BodyType } from "@flyover/box2d";
 import { LevelSystem } from "./LevelSystem";
 import { MessageSystem } from "./MessageSystem";
 import { GameEvent } from "./GameEvent";
+import { SoundSystem } from "./SoundSystem";
 
 export class PickupSystem extends System {
     static sname: string = "pickup";
     physics: PhysicsSystem;
     particles: ParticleSystem;
     messages: MessageSystem;
+    sounds: SoundSystem;
 
     startGame() {
         this.physics = this.engine.get(PhysicsSystem);
         this.particles = this.engine.get(ParticleSystem);
         this.messages = this.engine.get(MessageSystem);
+        this.sounds = this.engine.get(SoundSystem);
     }
 
-    private internalNewPickup(what: string, x: number, y: number): Entity {
+    private internalNewPickup(what: string, x: number, y: number, sound?: string): Entity {
         let e: Entity = this.engine.entityManager.createEntity(what);
         let t = e.add(Transform);
         let s = e.add(SpriteComponent);
@@ -34,6 +37,10 @@ export class PickupSystem extends System {
 
         let pickup = e.add(PickupComponent);
         pickup.what = what;
+        if (!sound) {
+            sound = "powerup01_s";
+        }
+        pickup.sound = sound;
         t.pos.set(x, y);
         let physics = e.getOrAdd(PhysicsComponent);
         physics.contactListener = this.onContact.bind(this);
@@ -55,16 +62,16 @@ export class PickupSystem extends System {
 
     }
 
-    newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType): Entity {
-        let e = this.internalNewPickup(what, x, y);
+    newPickup(what: string, x: number, y: number, r: Rectangle, bodyType?: b2BodyType, sound?: string): Entity {
+        let e = this.internalNewPickup(what, x, y, sound);
         let s = e.get(SpriteComponent);
         s.sprite.pivot = new Point(r.x + r.width / 2, r.y + r.height / 2);
         this.physics.addBox(e, new Rectangle(-r.width / 2, -r.height / 2, r.width, r.height), bodyType);
         return e;
     }
 
-    newCirclePickup(what: string, x: number, y: number, radius: number, bodyType?: b2BodyType): Entity {
-        let e = this.internalNewPickup(what, x, y);
+    newCirclePickup(what: string, x: number, y: number, radius: number, bodyType?: b2BodyType, sound?: string): Entity {
+        let e = this.internalNewPickup(what, x, y, sound);
         let s = e.get(SpriteComponent);
         s.sprite.pivot = new Point(radius, radius);
         this.physics.addCircle(e, radius, bodyType);
@@ -76,8 +83,9 @@ export class PickupSystem extends System {
         if (!player) {
             return;
         }
+
         let pickup = self.entity.get(PickupComponent);
-        console.log("Pickup " + pickup.what + " touched player");
+        this.sounds.play(pickup.sound);
 
         if (pickup.what == "wormhole") {
             this.engine.get(LevelSystem).advance();

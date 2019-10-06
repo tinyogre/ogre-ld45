@@ -27,9 +27,9 @@ export class LevelSystem extends System {
     currentLevelIndex: number = -1;
     loadNextLevel: number = 0;
     levels: Level[] = [
-        // Levels.level1,
-        // Levels.level2,
-        // Levels.level3,
+        Levels.level1,
+        Levels.level2,
+        Levels.level3,
         Levels.level4,
     ];
     particles: ParticleSystem;
@@ -91,15 +91,15 @@ export class LevelSystem extends System {
                 } else if (c === "W") {
                     e = this.createGround(worldX, worldY);
                 } else if (c === "S") {
-                    e = this.pickups.newPickup("star", worldX, worldY, new Rectangle(9, 10, 14, 15));
+                    e = this.pickups.newPickup("star", worldX, worldY, new Rectangle(9, 10, 14, 15), b2BodyType.b2_dynamicBody, "powerup01_s");
                 } else if (c === "T") {
-                    e = this.pickups.newPickup("engine", worldX, worldY, new Rectangle(8, 25, 16, 7));
+                    e = this.pickups.newPickup("engine", worldX, worldY, new Rectangle(8, 25, 16, 7), b2BodyType.b2_dynamicBody, "powerup02_s");
                 } else if (c === "O") {
-                    e = this.pickups.newCirclePickup("wormhole", worldX, worldY, 32, b2BodyType.b2_kinematicBody);
+                    e = this.pickups.newCirclePickup("wormhole", worldX, worldY, 32, b2BodyType.b2_kinematicBody, "wormhole01_s");
                     this.particles.addParticleEmitter(e, ParticleDef.WORMHOLE);
                     e.get(PhysicsComponent).body.GetFixtureList()!.m_isSensor = true;
                 } else if (c === "G") {
-                    e = this.pickups.newPickup("turret", worldX, worldY, new Rectangle(10, 4, 12, 18))
+                    e = this.pickups.newPickup("turret", worldX, worldY, new Rectangle(10, 4, 12, 18), b2BodyType.b2_dynamicBody, "powerup03_s");
                 } else if (c == "-") {
                     let start = x;
                     for (x = x + 1; x < row.length; x++) {
@@ -112,13 +112,13 @@ export class LevelSystem extends System {
                     let len = x - start + 1;
                     e = this.createHorizontalBeam(worldX, worldY, len);
                 } else if (c == "H") {
-                    e = this.pickups.newPickup("hook", worldX, worldY, new Rectangle(8, 12, 16, 20));
+                    e = this.pickups.newPickup("hook", worldX, worldY, new Rectangle(8, 12, 16, 20), b2BodyType.b2_dynamicBody, "powerup04_s");
                 }
 
 
                 if (level.messages[c]) {
                     if (!e) {
-                        e = this.pickups.newPickup("message", worldX, worldY, new Rectangle(0,0,32,32), b2BodyType.b2_kinematicBody);
+                        e = this.pickups.newPickup("message", worldX, worldY, new Rectangle(0,0,32,32), b2BodyType.b2_kinematicBody, "message01_s");
                         let fixture = e.get(PhysicsComponent).body.GetFixtureList();
                         while (fixture) {
                             fixture.m_isSensor = true;

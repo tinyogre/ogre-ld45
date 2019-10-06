@@ -5,4 +5,5 @@ export class PickupComponent extends Component {
     what: string;
     onPickup: (p: PickupComponent) => void;
     message?: string;
+    sound: string;
 }

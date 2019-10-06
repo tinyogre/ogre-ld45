@@ -19,6 +19,7 @@ import { GameEvent } from "./GameEvent";
 import { Level } from "./Levels";
 import { MessageSystem } from "./MessageSystem";
 import { TtlSystem } from "./TtlSystem";
+import { SoundSystem } from "./SoundSystem";
 
 export class PlayerSystem extends System {
     static sname: string = "player";
@@ -264,5 +265,6 @@ export class PlayerSystem extends System {
         playerPhysics.body.ApplyForce(new b2Vec2(-directionVector.x * Config.recoil, -directionVector.y * Config.recoil), playerPhysics.body.GetWorldCenter());
         this.engine.get(TtlSystem).setTtl(shot, Config.shotDuration);
         this.engine.events.emit(GameEvent.FIRED_SHOT);
+        this.engine.get(SoundSystem).play("shoot01_s");
     }
 }

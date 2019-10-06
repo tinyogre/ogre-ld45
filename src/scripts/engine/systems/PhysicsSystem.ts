@@ -7,6 +7,7 @@ import { DebugRenderSystem } from "./DebugRenderSystem";
 import { Point, Rectangle } from "pixi.js";
 import { Entity } from "../entity";
 import { Config } from "../../app/config"
+import { SoundSystem } from "../../app/SoundSystem";
 
 // class ContactListener extends b2ContactListener {
 //     physics: PhysicsSystem;
@@ -29,13 +30,22 @@ class FixtureObserver {
     fn: (fixtureA: b2Fixture, a: Entity, fixtureB: b2Fixture, b: Entity) => void;
 }
 
-export class xxxContactListener {
+export class AppContactListener {
+    sounds: SoundSystem;
+    constructor(sounds: SoundSystem) {
+        this.sounds = sounds;
+    }
+
     /// Called when two fixtures begin to touch.
     public BeginContact(contact: b2Contact): void { 
         let fixtureA = contact.m_fixtureA;
         let fixtureB = contact.m_fixtureB;
         let a = fixtureA.GetBody().m_userData as PhysicsComponent;
         let b = fixtureB.GetBody().m_userData as PhysicsComponent;
+
+        if (!fixtureA.IsSensor() && !fixtureB.IsSensor()) {
+            this.sounds.play("collision01_s");
+        }
 
         let manifold = new b2WorldManifold();
         contact.GetWorldManifold(manifold);
@@ -103,9 +113,12 @@ export class PhysicsSystem extends System {
 
     constructor() {
         super();
+    }
+
+    startGame() {
         let gravity: b2Vec2 = new b2Vec2(0, Config.gravity);
         this.world = new b2World(gravity);
-        this.contactListener = new xxxContactListener();
+        this.contactListener = new AppContactListener(this.engine.get(SoundSystem));
         this.world.SetContactListener(this.contactListener);
     }
 

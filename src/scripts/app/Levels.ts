@@ -60,10 +60,10 @@ export class Levels {
             "W.........................W",
             "W.........S......O........W",
             "WWWWWWWWWWWWWWWWWWWWWWWWWWW",
-        ],
-        messages: {
-            "1": "Again? Really?",
-            "S": "I got my controls back this time, now I can turn..."
+        ],              
+        messages: {     
+            //"1": "The name's Nothing. Hubert Nothing.\nNice to meet you.",
+            "S": "I got my controls back this time, now I can turn...",    
         },
         events: []
     };
@@ -79,7 +79,7 @@ export class Levels {
             "W..........W.......W......W",
             "W..........W.......W......W",
             "W..........W.......W......W",
-            "W..........W.......W......W",
+            "W..........W.......W......W",                                
             "W..........W....O..W......W",
             "W..........WWWWWWWWW......W",
             "W.........................W",                                                  

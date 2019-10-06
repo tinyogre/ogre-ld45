@@ -22,6 +22,7 @@ import { LevelSystem } from "./LevelSystem";
 import { MessageSystem } from "./MessageSystem";
 import { TtlSystem } from "./TtlSystem";
 import { GameEvent } from "./GameEvent";
+import { SoundSystem } from "./SoundSystem";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -29,12 +30,27 @@ export class StarTwit {
     splash_screen: Container;
 
     assets: Asset[] = [
-        {id: "splash_screen", url: "assets/gfx/splash_screen.png", priority: AssetPriority.HIGHEST, type: "texture" },
+        {id: "title_screen", url: "assets/gfx/title_screen.png", priority: AssetPriority.HIGHEST, type: "texture" },
         // {id: "press_start_2p", url: "assets/fonts/PressStart2p.ttf", priority: AssetPriority.HIGHEST, type: "font" },
         // {id: "ship", url: "assets/gfx/ship.png", priority: AssetPriority.HIGH, type: "texture"},
         // { id: "star", url: "assets/gfx/star.png", priority: AssetPriority.HIGH, type: "texture" },
         // { id: "engine", url: "assets/gfx/engine.png", priority: AssetPriority.HIGH, type: "texture" },
         // { id: "ground", url: "assets/gfx/ground.png", priority: AssetPriority.HIGH, type: "texture" },
+    ];
+
+    soundAssets: string[] = [
+        "collision01_s",
+        "message01_s",
+        "message02_s",
+        "message03_s",
+        "powerup01_s",
+        "powerup02_s",
+        "powerup03_s",
+        "powerup04_s",
+        "shoot01_s",
+        "thrust01_s",
+        "thrust02_s",
+        "wormhole01_s",
     ];
 
     gameTextures: string[] = [
@@ -53,10 +69,10 @@ export class StarTwit {
         "hook",
     ]
     
-    sound: Howl;
     engine: Engine;
     statusText: PIXI.Text;
     firstTime: boolean = true;
+    soundSystem: SoundSystem;
     
     static CANVAS_SIZE: Point = new Point(640, 480);
 
@@ -74,6 +90,11 @@ export class StarTwit {
         this.app.renderer.backgroundColor = 0x000040;
         this.loader = new PixiAssetsLoader();
         this.loader.on(PixiAssetsLoader.PRIORITY_GROUP_LOADED, this.onAssetsLoaded.bind(this));
+        for (let s of this.soundAssets) {
+            let sa: SoundAsset = { id: s, url: "assets/sfx/" + s + ".wav", priority: AssetPriority.HIGH, autoplay: false, loop: false, rate: 1, type: "sound" };
+            this.assets.push(sa);
+        }
+
         for (let g of this.gameTextures) {
             let a: Asset = { id: g, url: "assets/gfx/" + g + ".png", priority: AssetPriority.HIGH, type: "texture" }; 
             this.assets.push(a);
@@ -92,7 +113,8 @@ export class StarTwit {
         this.engine.add(ParticleSystem);
         this.engine.add(MessageSystem);
         this.engine.add(TtlSystem);
-        
+        this.soundSystem = this.engine.add(SoundSystem);
+
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.engine.gameStage;
 
@@ -119,9 +141,9 @@ export class StarTwit {
 
     private startMenu() {
         this.splash_screen = new PIXI.Container();
-        let art = PIXI.Sprite.from('splash_screen');
+        let art = PIXI.Sprite.from('title_screen');
         this.splash_screen.addChild(art);
-        art.scale = new Point(2,2);
+        //art.scale = new Point(2,2);
         this.app.stage.addChild(this.splash_screen);
         this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 10, fill: 0xffffff, align: 'center'});
         //this.statusText = new PIXI.Text("Loading...", { fontFamily: 'Courier', fontSize: 14, fill: 0xffffff, align: 'center' });
@@ -143,6 +165,8 @@ export class StarTwit {
         this.statusText.text = "Click to Start";
         let fn = this.onMenuClick.bind(this);
         this.app.renderer.plugins.interaction.on('pointerup', fn);
+
+
     }
 
     //The `randomInt` helper function
@@ -158,11 +182,9 @@ export class StarTwit {
     }
 
     private onAssetsLoaded(args: { priority: number, assets: LoadAsset[] }): void {
-        window.console.log(`[SAMPLE APP] onAssetsLoaded ${args.assets.map(loadAsset => loadAsset.asset.id)}`);
-
         args.assets.forEach(loadAsset => {
-            if (loadAsset.asset.id === "sound1" && loadAsset.loaded) {
-                this.sound = (loadAsset.asset as SoundAsset).howl!;
+            if (loadAsset.asset.type === "sound" && loadAsset.loaded) {
+                this.soundSystem.add(loadAsset.asset.id, (loadAsset.asset as SoundAsset).howl!);
             }
         });
 
