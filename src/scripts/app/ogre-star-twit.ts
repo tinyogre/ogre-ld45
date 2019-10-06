@@ -21,6 +21,7 @@ import { ParticleSystem } from "../engine/systems/ParticleSystem";
 import { LevelSystem } from "./LevelSystem";
 import { MessageSystem } from "./MessageSystem";
 import { TtlSystem } from "./TtlSystem";
+import { GameEvent } from "./GameEvent";
 
 export class StarTwit {
     app: PixiAppWrapper;
@@ -55,6 +56,8 @@ export class StarTwit {
     sound: Howl;
     engine: Engine;
     statusText: PIXI.Text;
+    firstTime: boolean = true;
+    
     static CANVAS_SIZE: Point = new Point(640, 480);
 
     constructor() {
@@ -92,19 +95,19 @@ export class StarTwit {
         
         let debugRenderSystem = this.engine.add(DebugRenderSystem);
         debugRenderSystem.stage = this.engine.gameStage;
+
+        this.engine.events.addListener(GameEvent.GAME_OVER, this.onGameOver.bind(this));
     }
 
     private startGame() {
-        let physics:PhysicsSystem = this.engine.get(PhysicsSystem);
-        // this.createGround(physics, 0, 470);
-        // this.createGround(physics, 320, 470);
-        // this.createGround(physics, -320, 470);
-
-        this.engine.startGame();
-        this.app.ticker.add((dt) => this.update(dt));
-
-        let p = this.engine.get(PhysicsSystem);
-        //p.setDebug(true);
+        if (this.firstTime) {
+            this.engine.startGame();
+            this.app.ticker.add((dt) => this.update(dt));
+            this.firstTime = false;
+        } else {
+            this.engine.get(LevelSystem).currentLevelIndex = -1;
+            this.engine.get(LevelSystem).loadNextLevel = 0;
+        }
     }
 
     private createGround(physics: PhysicsSystem, x: number, y: number) {
@@ -129,6 +132,17 @@ export class StarTwit {
         this.app.renderer.plugins.interaction.removeAllListeners();
         this.app.stage.removeChild(this.splash_screen);
         this.startGame();
+    }
+
+    private onGameOver() {
+        this.startMenu();
+        this.onReady();
+    }
+
+    private onReady() {
+        this.statusText.text = "Click to Start";
+        let fn = this.onMenuClick.bind(this);
+        this.app.renderer.plugins.interaction.on('pointerup', fn);
     }
 
     //The `randomInt` helper function
@@ -156,9 +170,7 @@ export class StarTwit {
             this.startMenu();
         }
         if (args.priority === AssetPriority.HIGH) {
-            this.statusText.text = "Click to Start";
-            let fn = this.onMenuClick.bind(this);
-            this.app.renderer.plugins.interaction.on('pointerup', fn);
+            this.onReady();
         }
     }
 }

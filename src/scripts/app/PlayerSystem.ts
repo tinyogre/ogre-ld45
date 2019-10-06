@@ -95,6 +95,8 @@ export class PlayerSystem extends System {
         sprite.sprite.pivot = new Point(16, 16);
         sprite.sprite.zIndex = -1;
         sprite.sprite.sortableChildren = true;
+
+        this.messages.addMessage(new Point(320, 10), this.engine.uiStage, "Backspace or DEL: Restart Level", 9000, 0xffff00);
     }
 
     keyDown(key: number) {
@@ -114,6 +116,9 @@ export class PlayerSystem extends System {
             if (key == "X".charCodeAt(0)) {
                 this.toggleHook();
             }
+        }
+        if (key == 8 || key == 46) {
+            this.engine.get(LevelSystem).restartLevel();
         }
     }
     static rotate(v: b2Vec2, r: number): b2Vec2 {

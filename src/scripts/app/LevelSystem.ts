@@ -27,9 +27,9 @@ export class LevelSystem extends System {
     currentLevelIndex: number = -1;
     loadNextLevel: number = 0;
     levels: Level[] = [
-//        Levels.level1,
-//        Levels.level2,
-//        Levels.level3,
+        // Levels.level1,
+        // Levels.level2,
+        // Levels.level3,
         Levels.level4,
     ];
     particles: ParticleSystem;
@@ -48,6 +48,12 @@ export class LevelSystem extends System {
     update(deltaTime: number): void {
         if (this.loadNextLevel != this.currentLevelIndex) {
             this.destroyLevel();
+            if (this.loadNextLevel >= this.levels.length) {
+                this.loadNextLevel = -1;
+                this.currentLevelIndex = -1;
+                this.engine.events.emit(GameEvent.GAME_OVER);
+                return;
+            }
             this.loadLevel(this.levels[this.loadNextLevel]);
             this.currentLevelIndex = this.loadNextLevel;
         }
@@ -104,7 +110,7 @@ export class LevelSystem extends System {
                         }
                     }
                     let len = x - start + 1;
-                    this.createHorizontalBeam(worldX, worldY, len);
+                    e = this.createHorizontalBeam(worldX, worldY, len);
                 } else if (c == "H") {
                     e = this.pickups.newPickup("hook", worldX, worldY, new Rectangle(8, 12, 16, 20));
                 }
@@ -144,7 +150,7 @@ export class LevelSystem extends System {
     //     return e;
     // }
 
-    createHorizontalBeam(x: number, y: number, count: number) {
+    createHorizontalBeam(x: number, y: number, count: number): Entity {
         let e = this.physics.createStatic(new PIXI.Rectangle(x, y, count * Config.tileSize, Config.tileSize), b2BodyType.b2_dynamicBody);
         let s = e.add(SpriteComponent);
         s.Load("this is not a real asset");
@@ -155,6 +161,7 @@ export class LevelSystem extends System {
             tile.position = new Point(i * Config.tileSize, 0);
             s.sprite.addChild(tile);
         }
+        return e;
     }
 
     private createGround(x: number, y: number): Entity {
@@ -171,4 +178,7 @@ export class LevelSystem extends System {
         this.loadNextLevel = this.currentLevelIndex + 1;
     }
 
+    restartLevel() {
+        this.currentLevelIndex = -1;
+    }
 }
