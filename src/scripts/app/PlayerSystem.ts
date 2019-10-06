@@ -110,7 +110,12 @@ export class PlayerSystem extends System {
 
         // ESC
         if (key == 27) {
-            this.engine.togglePause();
+            this.togglePause();
+        }
+
+        if (this.engine.paused && key == "X".charCodeAt(0)) {
+            this.togglePause();
+            this.engine.get(LevelSystem).setLevel(99);
         }
 
         if (this.playerComponent.canTowHook) {
@@ -217,7 +222,7 @@ export class PlayerSystem extends System {
         this.playerComponent.towHookSprite.pivot = new Point(16, 16);
         this.playerComponent.towHookSprite.position = new Point(16, 16);
         this.playerComponent.towHookSprite.zIndex = -500;
-        this.messages.addMessage(new Point(320, 410), this.engine.uiStage, "X: Deploy Hook", 9000, 0x8888ff);
+        this.messages.addMessage(new Point(320, 390), this.engine.uiStage, "X: Deploy Hook", 9000, 0x8888ff);
     }
 
     toggleHook() {
@@ -266,5 +271,20 @@ export class PlayerSystem extends System {
         this.engine.get(TtlSystem).setTtl(shot, Config.shotDuration);
         this.engine.events.emit(GameEvent.FIRED_SHOT);
         this.engine.get(SoundSystem).play("shoot01_s");
+    }
+
+    pauseText: PIXI.Text;
+    togglePause() {
+        if (this.engine.paused) {
+            this.engine.uiStage.removeChild(this.pauseText);
+            this.engine.paused = false;
+        } else {
+            if (!this.pauseText) {
+                this.pauseText = new PIXI.Text("ESC to Unpause, X to exit", { fontFamily: 'Press Start 2P', fontSize: 20, fill: 0xffaa77, align: 'center' });
+                this.pauseText.position = new Point(320 - this.pauseText.width / 2, 235);
+            }
+            this.engine.uiStage.addChild(this.pauseText);
+            this.engine.paused = true;
+        }
     }
 }

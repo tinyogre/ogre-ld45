@@ -8,7 +8,7 @@ export class StarFieldSystem extends System {
     }
 
     startGame() {
-        let bounds = new Rectangle(-1000, -1000, 2000, 2000);
+        let bounds = new Rectangle(-1000, -1000, 3000, 3000);
         let colors: number[] = [
             0xff0000,
             0x00ff00,
@@ -18,7 +18,7 @@ export class StarFieldSystem extends System {
             0xffffff
         ];
         
-        let count = 500;
+        let count = 1000;
         let stage = this.engine.gameStage;
         stage.sortableChildren = true;
         let g = new PIXI.Graphics();

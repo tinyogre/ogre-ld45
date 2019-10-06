@@ -85,7 +85,10 @@ export class StarTwit {
     statusText: PIXI.Text;
     firstTime: boolean = true;
     soundSystem: SoundSystem;
-    
+    keyboard: KeyboardSystem;
+    inGame: boolean = false;
+    enableLevelCheat = true;
+
     static CANVAS_SIZE: Point = new Point(640, 480);
 
     constructor() {
@@ -117,7 +120,7 @@ export class StarTwit {
 
         this.engine = new Engine(this.app);
         
-        this.engine.add(KeyboardSystem);
+        this.keyboard = this.engine.add(KeyboardSystem);
         this.engine.add(PhysicsSystem);
         this.engine.add(SpriteSystem);
         this.engine.add(PickupSystem);
@@ -134,17 +137,18 @@ export class StarTwit {
         debugRenderSystem.stage = this.engine.gameStage;
 
         this.engine.events.addListener(GameEvent.GAME_OVER, this.onGameOver.bind(this));
+        this.engine.events.addListener(GameEvent.GAME_WON, this.onGameWon.bind(this));
     }
 
-    private startGame() {
+    private startGame(level: number) {
+        this.inGame = true;
         if (this.firstTime) {
             this.engine.startGame();
             this.app.ticker.add((dt) => this.update(dt));
             this.firstTime = false;
-        } else {
-            this.engine.get(LevelSystem).currentLevelIndex = -1;
-            this.engine.get(LevelSystem).loadNextLevel = 0;
         }
+        this.engine.get(LevelSystem).currentLevelIndex = -1;
+        this.engine.get(LevelSystem).loadNextLevel = level;
     }
 
     private createGround(physics: PhysicsSystem, x: number, y: number) {
@@ -155,20 +159,26 @@ export class StarTwit {
     }
 
     private startMenu() {
+        this.inGame = false;
         this.splash_screen = new PIXI.Container();
         let art = PIXI.Sprite.from('title_screen');
         this.splash_screen.addChild(art);
         //art.scale = new Point(2,2);
         this.app.stage.addChild(this.splash_screen);
-        this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 10, fill: 0xffffff, align: 'center'});
+        this.statusText = new PIXI.Text("Loading...", {fontFamily: 'Press Start 2P', fontSize: 10, fill: 0xffaa77, align: 'center'});
         //this.statusText = new PIXI.Text("Loading...", { fontFamily: 'Courier', fontSize: 14, fill: 0xffffff, align: 'center' });
         this.splash_screen.addChild(this.statusText);
+        this.statusText.position = new Point(320 - this.statusText.width / 2, 300);
+    }
+
+    private exitMenu(toLevel: number) {
+        this.app.renderer.plugins.interaction.removeAllListeners();
+        this.app.stage.removeChild(this.splash_screen);
+        this.startGame(toLevel);
     }
 
     private onMenuClick() {
-        this.app.renderer.plugins.interaction.removeAllListeners();
-        this.app.stage.removeChild(this.splash_screen);
-        this.startGame();
+        this.exitMenu(5);
     }
 
     private onGameOver() {
@@ -176,14 +186,34 @@ export class StarTwit {
         this.onReady();
     }
 
-    private onReady() {
-        this.statusText.text = "Click to Start";
-        let fn = this.onMenuClick.bind(this);
-        this.app.renderer.plugins.interaction.on('pointerup', fn);
-
-
+    private onGameWon() {
+        this.enableLevelCheat = true;
     }
 
+    private onReady() {
+        if (this.enableLevelCheat) {
+            this.statusText.text = "Click to Start, or 1-6 on keyboard to jump to level";
+        } else {
+            this.statusText.text = "Click to Start"; 5
+        }
+        this.statusText.position = new Point(320 - this.statusText.width / 2, 320);
+
+        if (this.firstTime) {
+            this.keyboard.addKeyDown(this.keyDown.bind(this));
+        }
+        let fn = this.onMenuClick.bind(this);
+        this.app.renderer.plugins.interaction.on('pointerup', fn);
+    }
+
+    keyDown(key: number) {
+        if (this.inGame || !this.enableLevelCheat) {
+            return;
+        }
+        if (key >= "1".charCodeAt(0) && key <= "6".charCodeAt(0)) {
+            let levelIndex = key - "1".charCodeAt(0);
+            this.exitMenu(levelIndex);
+        }
+    }
     //The `randomInt` helper function
     randomInt(min: number, max: number) : number{
         return Math.floor(Math.random() * (max - min + 1)) + min;

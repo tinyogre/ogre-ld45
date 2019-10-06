@@ -7,4 +7,5 @@ export class GameEvent {
     static ADD_TOW_HOOK = "ADD_TOW_HOOK";
     static FIRED_SHOT = "FIRED_SHOT";
     static GAME_OVER = "GAME_OVER";
+    static GAME_WON = "GAME_WON";
 }

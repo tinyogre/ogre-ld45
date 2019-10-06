@@ -30,7 +30,7 @@ export class LevelSystem extends System {
     physics: PhysicsSystem;
     playerStart: Point;
     currentLevelIndex: number = -1;
-    loadNextLevel: number = 5;
+    loadNextLevel: number = 0;
     levels: Level[] = [
         Levels.level1,
         Levels.level2,
@@ -56,6 +56,9 @@ export class LevelSystem extends System {
         if (this.loadNextLevel != this.currentLevelIndex) {
             this.destroyLevel();
             if (this.loadNextLevel >= this.levels.length) {
+                if (this.loadNextLevel < 99) {
+                    this.engine.events.emit(GameEvent.GAME_WON);
+                }
                 this.loadNextLevel = -1;
                 this.currentLevelIndex = -1;
                 this.engine.events.emit(GameEvent.GAME_OVER);
@@ -223,7 +226,6 @@ export class LevelSystem extends System {
     }
 
     onFixtureContact(self: PhysicsComponent, other: PhysicsComponent) {
-        console.log("Fixture touched by " + other.entity.debugName);
         let fixture = self.entity.get(FixtureComponent);
         if (fixture && fixture.what === "button_unpressed") {
             this.explodeThings();
@@ -282,5 +284,10 @@ export class LevelSystem extends System {
 
     restartLevel() {
         this.currentLevelIndex = -1;
+    }
+
+    setLevel(levelIndex: number) {
+        this.currentLevelIndex = levelIndex - 1;
+        this.loadNextLevel = levelIndex;
     }
 }
